@@ -373,7 +373,7 @@ body[data-page="foundations"] .thumb{height:180px}
 .time-card{--w:360px;--rx:0;--ry:0;--x:50;--y:50;--a:0;--s:1;--p:1;
   appearance:none;display:block;position:relative;width:min(var(--w),100%);aspect-ratio:9/13;padding:0;border:0;
   background:none;color:inherit;text-align:initial;cursor:pointer;user-select:none;perspective:1600px;
-  touch-action:manipulation;-webkit-touch-callout:none}
+  touch-action:none;-webkit-touch-callout:none}
 .time-card.is-flipped{--s:-1}
 .time-card.is-pressing{--p:.985}
 .time-card:focus-visible{outline:2px solid currentColor;outline-offset:8px;border-radius:8% / 5.54%}
@@ -1022,7 +1022,7 @@ const PAGES = {"overview": {"title": "AZITO Design System", "lead": "국내 최�
   const interactionHeading = [...timeCardDoc.querySelectorAll("h2")]
     .find(heading => heading.textContent.trim() === "Interaction");
   if (interactionHeading?.nextElementSibling) {
-    interactionHeading.nextElementSibling.textContent = "데스크톱에서는 마우스를 올리면 기울고, 모바일에서는 손가락이 닿는 즉시 빛과 홀로그램이 나타나요. 짧게 누르면 앞뒷면이 전환돼요.";
+    interactionHeading.nextElementSibling.textContent = "데스크톱에서는 마우스를 올리면 기울고, 모바일에서는 카드에 손가락을 댄 채 움직이면 위치를 따라 카드와 빛이 움직여요. 짧게 누르면 앞뒷면이 전환돼요.";
   }
 
   [...timeCardDoc.querySelectorAll("tr")].forEach(row => {
@@ -1035,7 +1035,7 @@ const PAGES = {"overview": {"title": "AZITO Design System", "lead": "국내 최�
     }
 
     if (property === "Tilt" && cells[1]) {
-      cells[1].textContent = "마우스 이동 · 모바일 터치";
+      cells[1].textContent = "마우스 이동 · 모바일 터치 드래그";
     }
 
     if (property === "11" || property.includes("step=11")) row.remove();
@@ -1193,7 +1193,7 @@ TCX_CODE.html = `<button type="button" class="time-card"
 TCX_CODE.js = `{ // 블록으로 감싸서 페이지의 다른 변수와 이름이 겹치지 않게 해요
   const TILT = 14; // 최대 기울기(도)
   const TAP_MAX = 250; // 이 시간보다 짧게 누르면 카드 뒤집기
-  const MOVE_LIMIT = 10; // 터치 인터랙션과 스크롤을 구분하는 이동 거리(px)
+  const TAP_SLOP = 6; // 탭과 드래그를 구분하는 이동 거리(px)
   const reduce = matchMedia("(prefers-reduced-motion: reduce)");
   const finePointer = matchMedia("(hover: hover) and (pointer: fine)");
   const find = e => e.target.closest && e.target.closest(".time-card");
@@ -1247,7 +1247,8 @@ TCX_CODE.js = `{ // 블록으로 감싸서 페이지의 다른 변수와 이름�
     if (e.pointerType !== "touch" || !e.isPrimary) return;
     const el = find(e); if (!el) return;
     if (touchPress) reset(touchPress.el);
-    touchPress = { el, id: e.pointerId, startX: e.clientX, startY: e.clientY, startedAt: performance.now() };
+    touchPress = { el, id: e.pointerId, startX: e.clientX, startY: e.clientY, startedAt: performance.now(), moved: false };
+    el.setPointerCapture?.(e.pointerId);
     el.classList.add("is-pressing", "is-moved", "is-hover");
     queuePointer(el, e.clientX, e.clientY);
   });
@@ -1256,18 +1257,15 @@ TCX_CODE.js = `{ // 블록으로 감싸서 페이지의 다른 변수와 이름�
     const press = touchPress;
     if (!press || e.pointerId !== press.id) return;
     const distance = Math.hypot(e.clientX - press.startX, e.clientY - press.startY);
-    if (distance > MOVE_LIMIT) {
-      reset(press.el);
-      touchPress = null;
-      return;
-    }
+    if (distance > TAP_SLOP) press.moved = true;
+    e.preventDefault();
     queuePointer(press.el, e.clientX, e.clientY);
-  });
+  }, { passive: false });
 
   const finishTouch = (e, cancelled = false) => {
     const press = touchPress;
     if (!press || e.pointerId !== press.id) return;
-    if (!cancelled && performance.now() - press.startedAt >= TAP_MAX) {
+    if (!cancelled && (press.moved || performance.now() - press.startedAt >= TAP_MAX)) {
       suppressClickUntil.set(press.el, performance.now() + 700);
       e.preventDefault();
     }
@@ -1423,7 +1421,7 @@ const PREV = {
   "avatar": () => S("Preview", `<div class="row" style="gap:20px;align-items:flex-end">${[92,84,66,48,28].map((s,i)=>L(["xl","lg","md","sm","xs"][i]+" · "+s,`<span class="av img" style="width:${s}px;height:${s}px"></span>`)).join("")}</div><div class="row" style="gap:20px">${L("blank-gray",`<span class="av" style="width:48px;height:48px">${fl("user",30)}</span>`)}${L("blank-black",`<span class="av bk" style="width:48px;height:48px;color:var(--az-n80)">${fl("user",30)}</span>`)}${L("host",`<span class="av" style="width:48px;height:48px;background:var(--az-mint-5);color:var(--az-mint-on)">${ic("ticket",24)}</span>`)}</div>`),
   "divider": () => S("Preview", `<div class="col" style="gap:24px">${L("sm · 1px · 328",`<div style="width:360px;padding:0 16px;background:#fff;border-radius:8px"><div style="height:20px"></div><div class="dv" style="height:1px"></div><div style="height:20px"></div></div>`)}${L("lg · 6px · 360",`<div style="width:360px;background:#fff;border-radius:8px;overflow:hidden"><div style="height:20px"></div><div class="dv" style="height:6px"></div><div style="height:20px"></div></div>`)}</div>`),
   "pagination-dot": () => S("Preview", `<div class="row" style="gap:32px">${[1,2,3].map(n=>L("selection "+n,`<div class="dots">${[1,2,3,4,5].map(i=>`<i class="${i===n?"on":""}"></i>`).join("")}</div>`)).join("")}</div>`),
-  "time-card": () => `<div class="tcx-demo"><div class="tcx-tabs" role="tablist"><button type="button" role="tab" data-tcx-tab="preview" aria-selected="true">Preview</button><button type="button" role="tab" data-tcx-tab="code" aria-selected="false">Prototype Code</button></div><div class="stage stage-primary tcx-stage" data-tcx-panel="preview"><span class="stage-label">Preview</span><div class="stage-inner az">${tcx()}<p class="tcx-hint">마우스를 올리거나 화면에서 카드에 손을 대고 빛을 움직여 보세요. 짧게 탭하면 뒤집혀요</p></div></div><div class="tcx-code" data-tcx-panel="code" hidden><div class="tcx-langs"><span role="tablist">${[["html","HTML"],["css","CSS"],["js","JavaScript"]].map(([k,t],i)=>`<button type="button" role="tab" data-tcx-lang="${k}" aria-selected="${i===0}">${t}</button>`).join("")}</span><button type="button" class="tcx-copy">복사</button></div>${Object.keys(TCX_CODE).map((k,i)=>`<pre data-tcx-code="${k}" ${i?"hidden":""}><code>${esc(TCX_CODE[k])}</code></pre>`).join("")}</div></div>`,
+  "time-card": () => `<div class="tcx-demo"><div class="tcx-tabs" role="tablist"><button type="button" role="tab" data-tcx-tab="preview" aria-selected="true">Preview</button><button type="button" role="tab" data-tcx-tab="code" aria-selected="false">Prototype Code</button></div><div class="stage stage-primary tcx-stage" data-tcx-panel="preview"><span class="stage-label">Preview</span><div class="stage-inner az">${tcx()}<p class="tcx-hint">카드에 손가락을 댄 채 움직여 기울기와 빛을 조절해 보세요. 짧게 탭하면 뒤집혀요</p></div></div><div class="tcx-code" data-tcx-panel="code" hidden><div class="tcx-langs"><span role="tablist">${[["html","HTML"],["css","CSS"],["js","JavaScript"]].map(([k,t],i)=>`<button type="button" role="tab" data-tcx-lang="${k}" aria-selected="${i===0}">${t}</button>`).join("")}</span><button type="button" class="tcx-copy">복사</button></div>${Object.keys(TCX_CODE).map((k,i)=>`<pre data-tcx-code="${k}" ${i?"hidden":""}><code>${esc(TCX_CODE[k])}</code></pre>`).join("")}</div></div>`,
   "app-bar": () => S("Preview", `<div class="col" style="gap:16px">${L("left · text",`<div class="appbar"><span class="l">${ic("left",24,2.2)}<span class="tt">마이페이지</span></span><span class="r">${ic("search",28)}${ic("bell",28)}</span></div>`)}${L("center · text",`<div class="appbar"><span>${ic("left",24,2.2)}</span><span class="tt c">겐바 상세</span><span class="r">${ic("more",28)}</span></div>`)}${L("left · progress-bar",`<div class="appbar" style="justify-content:flex-start;gap:12px"><span>${ic("left",24,2.2)}</span><div class="pb" style="width:88px"><i class="on"></i><i class="on"></i><i></i><i></i></div></div>`)}</div>`),
   "tabs": () => S("Preview", `<div class="col" style="gap:16px">${L("count 3",`<div class="tabs"><div class="on">라인업</div><div>타임테이블</div><div>공지</div></div>`)}${L("count 2",`<div class="tabs"><div>예정</div><div class="on">지난 공연</div></div>`)}</div>`),
   "section-title": () => S("Preview", `<div class="col">${L("default",`<div class="st"><div class="r1"><b>새로 데뷔한 아이돌</b><span class="more">더보기${ic("right",16)}</span></div><small>이번 주 새로 등록된 아티스트예요</small></div>`)}</div>`),
@@ -1916,7 +1914,7 @@ route();
 { // 블록으로 감싸서 페이지의 다른 변수와 이름이 겹치지 않게 해요
   const TILT = 14; // 최대 기울기(도)
   const TAP_MAX = 250; // 이 시간보다 짧게 누르면 카드 뒤집기
-  const MOVE_LIMIT = 10; // 터치 인터랙션과 스크롤을 구분하는 이동 거리(px)
+  const TAP_SLOP = 6; // 탭과 드래그를 구분하는 이동 거리(px)
   const reduce = matchMedia("(prefers-reduced-motion: reduce)");
   const finePointer = matchMedia("(hover: hover) and (pointer: fine)");
   const find = e => e.target.closest && e.target.closest(".time-card");
@@ -1972,7 +1970,8 @@ route();
     if (e.pointerType !== "touch" || !e.isPrimary) return;
     const el = find(e); if (!el) return;
     if (touchPress) reset(touchPress.el);
-    touchPress = { el, id: e.pointerId, startX: e.clientX, startY: e.clientY, startedAt: performance.now() };
+    touchPress = { el, id: e.pointerId, startX: e.clientX, startY: e.clientY, startedAt: performance.now(), moved: false };
+    el.setPointerCapture?.(e.pointerId);
     el.classList.add("is-pressing", "is-moved", "is-hover");
     queuePointer(el, e.clientX, e.clientY);
   });
@@ -1981,18 +1980,15 @@ route();
     const press = touchPress;
     if (!press || e.pointerId !== press.id) return;
     const distance = Math.hypot(e.clientX - press.startX, e.clientY - press.startY);
-    if (distance > MOVE_LIMIT) {
-      reset(press.el);
-      touchPress = null;
-      return;
-    }
+    if (distance > TAP_SLOP) press.moved = true;
+    e.preventDefault();
     queuePointer(press.el, e.clientX, e.clientY);
-  });
+  }, { passive: false });
 
   const finishTouch = (e, cancelled = false) => {
     const press = touchPress;
     if (!press || e.pointerId !== press.id) return;
-    if (!cancelled && performance.now() - press.startedAt >= TAP_MAX) {
+    if (!cancelled && (press.moved || performance.now() - press.startedAt >= TAP_MAX)) {
       suppressClickUntil.set(press.el, performance.now() + 700);
       e.preventDefault();
     }
