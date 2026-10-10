@@ -993,109 +993,12 @@ img.sh-avs{display:block;width:92px;height:29px;max-width:none;margin:-2px -2px 
   .usage-screens{padding:20px 0 0;border-left:0;border-top:1px solid var(--line)}
 }
 
-/* ===== Montage-inspired documentation polish ===== */
-:root{--top:64px}
-.top{height:64px;border-bottom:1px solid var(--line);box-shadow:none}
-.topnav{margin-left:32px;gap:26px}
-.topnav a{position:relative;min-height:64px;padding:21px 0 18px;border-radius:0;color:var(--fg-3);font-size:14px;line-height:24px}
-.topnav a:hover{background:transparent;color:var(--fg)}
-.topnav a[aria-current="true"]{background:transparent;color:var(--fg);font-weight:700}
-.topnav a[aria-current="true"]::after{content:"";position:absolute;right:0;bottom:-1px;left:0;height:2px;background:var(--accent)}
-.wordmark{height:18px}
-.logo small{font-size:13px;color:var(--fg-3)}
-
-.side{top:64px;height:calc(100vh - 64px);padding:22px 8px 48px 0}
-#sideList{gap:2px;padding-top:0}
-.side-label{margin:18px 0 5px;padding:0 10px;font-size:11px;line-height:18px;font-weight:600;letter-spacing:.02em;color:var(--fg-3);opacity:1}
-.side a,.side .fold{min-height:34px;padding:7px 10px;border-radius:6px;font-size:13px;line-height:20px;color:var(--fg-3)}
-.side a:hover,.side .fold:hover{background:var(--bg-soft);color:var(--fg)}
-.side a[aria-current="page"]{background:var(--bg-soft);color:var(--fg);font-weight:600}
-.side a[aria-current="page"]::after{content:"\2192";margin-left:auto;color:var(--fg)}
-.side .kids{gap:2px;margin-left:10px;padding-top:2px}
-
-.doc{max-width:760px}
-.component-doc{max-width:760px}
-.component-header{max-width:680px}
-.component-doc+.pager{max-width:760px}
-.doc h1,.hero h1{font-size:36px;line-height:48px;letter-spacing:-.025em}
-.lead{max-width:680px;margin:12px 0 44px;font-size:15px;line-height:24px;font-weight:400;color:var(--fg-3)}
-.component-breadcrumb{margin-bottom:14px!important}
-.component-breadcrumb span{height:auto;padding:0;border-radius:0;background:transparent;color:var(--fg-2);font-weight:700}
-.component-section{margin-top:60px}
-.section-heading{align-items:flex-end;margin-bottom:16px}
-.section-kicker{margin-bottom:3px;font-size:11px;letter-spacing:.055em}
-.component-doc .section-heading h2,.component-doc>.component-reference>h2{font-size:22px;line-height:30px;font-weight:600}
-.section-note{font-size:12px;line-height:18px}
-.component-preview .stage{padding:48px 28px 28px;border-radius:14px}
-.component-preview .stage-primary{padding-top:28px}
-.component-preview .stage-label{top:18px;left:28px}
-.component-reference{margin-top:60px}
-.reference-content{border-color:var(--line)}
-.ref-section>summary{padding:18px 0}
-.ref-title{font-size:16px;line-height:24px}
-
-.tcx-demo{gap:22px}
-.tcx-tabs{display:flex;width:100%;align-self:stretch;gap:26px;padding:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent}
-.tcx-tabs button{position:relative;padding:0 0 11px;border-radius:0;font-size:14px;font-weight:500;color:var(--fg-3)}
-.tcx-tabs button[aria-selected="true"]{background:transparent;color:var(--fg);font-weight:700;box-shadow:none}
-.tcx-tabs button[aria-selected="true"]::after{content:"";position:absolute;right:0;bottom:-1px;left:0;height:2px;background:var(--accent)}
-.component-preview .stage.tcx-stage{padding:32px 24px 24px;border:1px solid #1d2027;border-radius:14px}
-.tcx-stage .time-card{--w:210px}
-.tcx-stage .stage-inner{gap:20px}
-.tcx-hint{font-size:12px;line-height:18px}
-.tcx-code{border-radius:14px;padding:14px}
-.tcx-langs>span{gap:22px;padding:0;border-radius:0;background:transparent}
-.tcx-langs button{position:relative;padding:5px 0 9px;border-radius:0}
-.tcx-langs button[aria-selected="true"]{background:transparent;color:var(--fg);box-shadow:none}
-.tcx-langs button[aria-selected="true"]::after{content:"";position:absolute;right:0;bottom:0;left:0;height:2px;background:var(--accent)}
-.tcx-langs .tcx-copy{padding:6px 10px;border-radius:6px}
-
-.stage{border-radius:14px}
-.thumb,body:not([data-page="foundations"]) .thumb{border-radius:12px}
-.goal-card,.sc-card{border-radius:12px}
-.usage-overview{border-radius:14px}
-.gsearch input{border-radius:8px}
-
-@media (min-width:1201px){
-  .top{grid-template-columns:210px minmax(0,1fr) 210px;padding-inline:40px}
-  .top .topnav{justify-self:center;margin-left:0}
-  .top .gsearch{justify-self:end}
-  body[data-layout="side"] .shell,
-  body[data-layout="side"] .shell:has(.toc:empty){max-width:1100px;margin:0 auto;padding-left:0;grid-template-columns:184px minmax(0,760px);column-gap:64px}
-  body[data-layout="side"] .toc{display:none}
-  body[data-layout="side"] main{padding:48px 0 96px}
-}
-
-@media (min-width:861px){
-  .gsearch{width:40px;transition:width .2s var(--ease)}
-  .gsearch:focus-within{width:232px}
-  .gsearch input{padding:0 38px 0 12px!important;border-color:transparent;background:transparent;color:transparent;cursor:pointer}
-  .gsearch:not(:focus-within) input::placeholder{color:transparent}
-  .gsearch:focus-within input{border-color:var(--line);background:var(--bg-soft);color:var(--fg);cursor:text}
-  .gsearch .gs-icon{top:12px;right:12px}
-  .gsearch kbd{display:none}
-  .gres{right:0;left:auto}
-}
-
-@media (min-width:861px) and (max-width:1200px){
-  body[data-layout="side"] .shell{padding-left:24px;grid-template-columns:180px minmax(0,760px);column-gap:40px}
-  body[data-layout="side"] main{padding:48px 24px 80px 0}
-}
-
-@media (max-width:860px){
-  .top{height:64px;border-bottom:1px solid var(--line)}
-  .gsearch input{height:36px;border-radius:8px}
-  .menu-btn{height:36px;border:0;background:var(--bg-soft);border-radius:8px}
-  main,body[data-layout="full"] main{padding:28px 16px 64px}
-  .doc h1,.hero h1,body[data-layout="full"] .doc h1{font-size:30px;line-height:38px}
-  .lead{margin-bottom:36px;font-size:15px;line-height:24px}
-  .component-section{margin-top:48px}
-  .component-preview .stage{padding:44px 18px 22px;border-radius:12px}
-  .component-preview .stage-primary{padding-top:22px}
-  .component-preview .stage.tcx-stage{padding:26px 14px 22px;border-radius:12px}
-  .tcx-stage .time-card{--w:min(210px,64vw)}
-  .tcx-tabs{gap:22px}
-}
+/* 텍스트 선명도만 유지하고 레이아웃은 기존 구조를 사용해요. */
+.topnav a[aria-current="true"],
+.side a[aria-current="page"],
+.component-breadcrumb span,
+.tcx-tabs button[aria-selected="true"],
+.tcx-langs button[aria-selected="true"]{color:var(--fg);font-weight:700}
 </style>
 </head>
 <body>
