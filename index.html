@@ -1202,6 +1202,7 @@ TCX_CODE.js = `{ // 블록으로 감싸서 페이지의 다른 변수와 이름�
   let pendingPointer = null;
   let touchPress = null;
   const suppressClickUntil = new WeakMap();
+  const settleTimers = new WeakMap();
 
   const queuePointer = (el, clientX, clientY) => {
     pendingPointer = { el, clientX, clientY };
@@ -1247,6 +1248,7 @@ TCX_CODE.js = `{ // 블록으로 감싸서 페이지의 다른 변수와 이름�
     if (e.pointerType !== "touch" || !e.isPrimary) return;
     const el = find(e); if (!el) return;
     if (touchPress) reset(touchPress.el);
+    clearTimeout(settleTimers.get(el));
     touchPress = { el, id: e.pointerId, startX: e.clientX, startY: e.clientY, startedAt: performance.now(), moved: false };
     el.setPointerCapture?.(e.pointerId);
     el.classList.add("is-pressing", "is-moved", "is-hover");
@@ -1265,12 +1267,28 @@ TCX_CODE.js = `{ // 블록으로 감싸서 페이지의 다른 변수와 이름�
   const finishTouch = (e, cancelled = false) => {
     const press = touchPress;
     if (!press || e.pointerId !== press.id) return;
-    if (!cancelled && (press.moved || performance.now() - press.startedAt >= TAP_MAX)) {
+    const isTap = !cancelled && !press.moved && performance.now() - press.startedAt < TAP_MAX;
+    touchPress = null;
+    if (isTap) {
+      suppressClickUntil.set(press.el, performance.now() + 700);
+      queuePointer(press.el, press.startX, press.startY);
+      e.preventDefault();
+      requestAnimationFrame(() => {
+        flip(press.el);
+        const timer = setTimeout(() => {
+          if (settleTimers.get(press.el) !== timer || touchPress?.el === press.el) return;
+          settleTimers.delete(press.el);
+          reset(press.el);
+        }, reduce.matches ? 0 : 620);
+        settleTimers.set(press.el, timer);
+      });
+      return;
+    }
+    if (!cancelled) {
       suppressClickUntil.set(press.el, performance.now() + 700);
       e.preventDefault();
     }
     reset(press.el);
-    touchPress = null;
   };
   document.addEventListener("pointerup", e => finishTouch(e));
   document.addEventListener("pointercancel", e => finishTouch(e, true));
@@ -1923,6 +1941,7 @@ route();
   let pendingPointer = null;
   let touchPress = null;
   const suppressClickUntil = new WeakMap();
+  const settleTimers = new WeakMap();
 
   // 기울이기 + 광택: 포인터 위치 계산을 화면 갱신 주기에 맞춰 한 번만 처리해요
   const queuePointer = (el, clientX, clientY) => {
@@ -1970,6 +1989,7 @@ route();
     if (e.pointerType !== "touch" || !e.isPrimary) return;
     const el = find(e); if (!el) return;
     if (touchPress) reset(touchPress.el);
+    clearTimeout(settleTimers.get(el));
     touchPress = { el, id: e.pointerId, startX: e.clientX, startY: e.clientY, startedAt: performance.now(), moved: false };
     el.setPointerCapture?.(e.pointerId);
     el.classList.add("is-pressing", "is-moved", "is-hover");
@@ -1988,12 +2008,28 @@ route();
   const finishTouch = (e, cancelled = false) => {
     const press = touchPress;
     if (!press || e.pointerId !== press.id) return;
-    if (!cancelled && (press.moved || performance.now() - press.startedAt >= TAP_MAX)) {
+    const isTap = !cancelled && !press.moved && performance.now() - press.startedAt < TAP_MAX;
+    touchPress = null;
+    if (isTap) {
+      suppressClickUntil.set(press.el, performance.now() + 700);
+      queuePointer(press.el, press.startX, press.startY);
+      e.preventDefault();
+      requestAnimationFrame(() => {
+        flip(press.el);
+        const timer = setTimeout(() => {
+          if (settleTimers.get(press.el) !== timer || touchPress?.el === press.el) return;
+          settleTimers.delete(press.el);
+          reset(press.el);
+        }, reduce.matches ? 0 : 620);
+        settleTimers.set(press.el, timer);
+      });
+      return;
+    }
+    if (!cancelled) {
       suppressClickUntil.set(press.el, performance.now() + 700);
       e.preventDefault();
     }
     reset(press.el);
-    touchPress = null;
   };
   document.addEventListener("pointerup", e => finishTouch(e));
   document.addEventListener("pointercancel", e => finishTouch(e, true));
