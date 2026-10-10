@@ -370,10 +370,12 @@ body[data-page="foundations"] .thumb{height:180px}
 .dv{background:var(--az-d1)}
 /* ---- Time Card interaction ---- */
 /* --w 하나로 카드 크기를 바꿔요. 비율(9:13)과 모서리는 따라와요 */
-.time-card{--w:360px;--rx:0;--ry:0;--x:50;--y:50;--a:0;--s:1;
+.time-card{--w:360px;--rx:0;--ry:0;--x:50;--y:50;--a:0;--s:1;--p:1;
   appearance:none;display:block;position:relative;width:min(var(--w),100%);aspect-ratio:9/13;padding:0;border:0;
-  background:none;color:inherit;text-align:initial;cursor:pointer;user-select:none;perspective:1600px}
+  background:none;color:inherit;text-align:initial;cursor:pointer;user-select:none;perspective:1600px;
+  touch-action:manipulation;-webkit-touch-callout:none}
 .time-card.is-flipped{--s:-1}
+.time-card.is-pressing{--p:.985}
 .time-card:focus-visible{outline:2px solid currentColor;outline-offset:8px;border-radius:8% / 5.54%}
 
 /* 카드 뒤 빛 (aura) — 두 겹이 커서를 따라 서로 반대 방향으로 움직여요 */
@@ -396,7 +398,7 @@ body[data-page="foundations"] .thumb{height:180px}
 .time-card-flip,.time-card-tilt{display:block;position:relative;width:100%;height:100%;transform-style:preserve-3d}
 .time-card-flip{transform:rotateY(0);transition:transform .6s cubic-bezier(.4,0,.2,1)}
 .time-card.is-flipped .time-card-flip{transform:rotateY(180deg)}
-.time-card-tilt{transform:rotateX(calc(var(--rx)*var(--s)*1deg)) rotateY(calc(var(--ry)*1deg));
+.time-card-tilt{transform:rotateX(calc(var(--rx)*var(--s)*1deg)) rotateY(calc(var(--ry)*1deg)) scale(var(--p));
   transition:transform .7s cubic-bezier(.22,1,.36,1)}
 .time-card.is-moved .time-card-tilt{transition:transform .12s ease-out}
 
@@ -422,6 +424,7 @@ body[data-page="foundations"] .thumb{height:180px}
 
 /* 동작 줄이기: 위치 이동은 끄고 빛의 나타남/사라짐만 유지해요 */
 @media (prefers-reduced-motion:reduce){
+  .time-card.is-pressing{--p:1}
   .time-card-flip,.time-card-tilt{transition:none}
   .time-card-glow{animation:none;translate:-50% -50%;transition:none}
   .time-card-glare{background:radial-gradient(circle at 50% 50%,oklch(1 0 0/.35) 0%,oklch(1 0 0/.1) 25%,transparent 55%)}
@@ -1016,6 +1019,12 @@ const PAGES = {"overview": {"title": "AZITO Design System", "lead": "국내 최�
   timeCardDoc.innerHTML = PAGES["time-card"].html;
   timeCardDoc.querySelector("blockquote")?.remove();
 
+  const interactionHeading = [...timeCardDoc.querySelectorAll("h2")]
+    .find(heading => heading.textContent.trim() === "Interaction");
+  if (interactionHeading?.nextElementSibling) {
+    interactionHeading.nextElementSibling.textContent = "데스크톱에서는 마우스를 올리면 기울고, 모바일에서는 길게 누르면 빛과 홀로그램이 나타나요. 짧게 누르면 앞뒷면이 전환돼요.";
+  }
+
   [...timeCardDoc.querySelectorAll("tr")].forEach(row => {
     const cells = row.querySelectorAll("td");
     if (!cells.length) return;
@@ -1023,6 +1032,10 @@ const PAGES = {"overview": {"title": "AZITO Design System", "lead": "국내 최�
 
     if (property === "step" && cells[1]) {
       cells[1].innerHTML = "<code>1</code>, <code>2</code>";
+    }
+
+    if (property === "Tilt" && cells[1]) {
+      cells[1].textContent = "마우스 이동 · 모바일 420ms 롱터치";
     }
 
     if (property === "11" || property.includes("step=11")) row.remove();
@@ -1179,18 +1192,19 @@ TCX_CODE.html = `<button type="button" class="time-card"
 }
 TCX_CODE.js = `{ // 블록으로 감싸서 페이지의 다른 변수와 이름이 겹치지 않게 해요
   const TILT = 14; // 최대 기울기(도)
+  const LONG_PRESS = 420; // 모바일 롱터치 시간(ms)
+  const MOVE_LIMIT = 10; // 스크롤과 롱터치를 구분하는 이동 거리(px)
   const reduce = matchMedia("(prefers-reduced-motion: reduce)");
   const finePointer = matchMedia("(hover: hover) and (pointer: fine)");
   const find = e => e.target.closest && e.target.closest(".time-card");
   const set = (el, vars) => { for (const k in vars) el.style.setProperty(k, vars[k]); };
   let pointerFrame = 0;
   let pendingPointer = null;
+  let touchPress = null;
+  const suppressClickUntil = new WeakMap();
 
-  // 기울이기 + 광택: 포인터 이벤트를 화면 갱신 주기에 맞춰 한 번만 처리해요
-  document.addEventListener("pointermove", e => {
-    if (!finePointer.matches) return;
-    const el = find(e); if (!el) return;
-    pendingPointer = { el, clientX: e.clientX, clientY: e.clientY };
+  const queuePointer = (el, clientX, clientY) => {
+    pendingPointer = { el, clientX, clientY };
     if (pointerFrame) return;
     pointerFrame = requestAnimationFrame(() => {
       pointerFrame = 0;
@@ -1207,25 +1221,95 @@ TCX_CODE.js = `{ // 블록으로 감싸서 페이지의 다른 변수와 이름�
       const t = TILT * 2;
       set(p.el, { "--rx": (0.5 - y) * t, "--ry": (x - 0.5) * t, "--x": x * 100, "--y": y * 100, "--a": 1 });
     });
-  });
+  };
 
-  // 카드 밖으로 나가면 원위치
-  document.addEventListener("pointerout", e => {
-    const el = find(e); if (!el || el.contains(e.relatedTarget)) return;
+  const reset = el => {
     if (pendingPointer && pendingPointer.el === el) pendingPointer = null;
-    if (pointerFrame) { cancelAnimationFrame(pointerFrame); pointerFrame = 0; }
-    el.classList.remove("is-moved", "is-hover");
+    el.classList.remove("is-moved", "is-hover", "is-pressing");
     set(el, { "--rx": 0, "--ry": 0, "--x": 50, "--y": 50, "--a": 0 });
+  };
+
+  // 데스크톱: 마우스를 따라 기울여요
+  document.addEventListener("pointermove", e => {
+    if (!finePointer.matches || e.pointerType === "touch") return;
+    const el = find(e); if (el) queuePointer(el, e.clientX, e.clientY);
   });
 
-  // CSS transition이라 동작 중 다시 눌러도 현재 각도에서 자연스럽게 반전돼요
+  document.addEventListener("pointerout", e => {
+    if (!finePointer.matches || e.pointerType === "touch") return;
+    const el = find(e); if (!el || el.contains(e.relatedTarget)) return;
+    if (pointerFrame) { cancelAnimationFrame(pointerFrame); pointerFrame = 0; }
+    reset(el);
+  });
+
+  // 모바일: 420ms 롱터치하면 홀로그램을 켜고, 손가락 위치를 따라 움직여요
+  document.addEventListener("pointerdown", e => {
+    if (e.pointerType !== "touch" || !e.isPrimary) return;
+    const el = find(e); if (!el) return;
+    if (touchPress) {
+      clearTimeout(touchPress.timer);
+      reset(touchPress.el);
+    }
+    el.classList.add("is-pressing");
+    const press = { el, id: e.pointerId, startX: e.clientX, startY: e.clientY, x: e.clientX, y: e.clientY, activated: false, timer: 0 };
+    press.timer = setTimeout(() => {
+      if (touchPress !== press || !el.isConnected) return;
+      press.activated = true;
+      el.classList.add("is-moved", "is-hover");
+      queuePointer(el, press.x, press.y);
+    }, LONG_PRESS);
+    touchPress = press;
+  });
+
+  document.addEventListener("pointermove", e => {
+    const press = touchPress;
+    if (!press || e.pointerId !== press.id) return;
+    press.x = e.clientX;
+    press.y = e.clientY;
+    const distance = Math.hypot(e.clientX - press.startX, e.clientY - press.startY);
+    if (!press.activated && distance > MOVE_LIMIT) {
+      clearTimeout(press.timer);
+      reset(press.el);
+      touchPress = null;
+      return;
+    }
+    if (press.activated) {
+      e.preventDefault();
+      queuePointer(press.el, e.clientX, e.clientY);
+    }
+  }, { passive: false });
+
+  const finishTouch = (e, cancelled = false) => {
+    const press = touchPress;
+    if (!press || e.pointerId !== press.id) return;
+    clearTimeout(press.timer);
+    if (press.activated && !cancelled) {
+      suppressClickUntil.set(press.el, performance.now() + 700);
+      e.preventDefault();
+    }
+    reset(press.el);
+    touchPress = null;
+  };
+  document.addEventListener("pointerup", e => finishTouch(e));
+  document.addEventListener("pointercancel", e => finishTouch(e, true));
+  document.addEventListener("contextmenu", e => {
+    const el = find(e);
+    if (el && (touchPress?.el === el || !finePointer.matches)) e.preventDefault();
+  });
+
   const flip = el => {
     const back = el.classList.toggle("is-flipped");
     el.setAttribute("aria-pressed", back);
   };
 
-  // 네이티브 button이 Enter/Space를 click으로 변환하므로 별도 keydown 처리는 필요 없어요
-  document.addEventListener("click", e => { const el = find(e); if (el) flip(el); });
+  document.addEventListener("click", e => {
+    const el = find(e); if (!el) return;
+    if ((suppressClickUntil.get(el) || 0) > performance.now()) {
+      e.preventDefault();
+      return;
+    }
+    flip(el);
+  });
 }`;
 
 /* 속성별 미리보기 블록 (SEED 문서 구조) */
@@ -1355,7 +1439,7 @@ const PREV = {
   "avatar": () => S("Preview", `<div class="row" style="gap:20px;align-items:flex-end">${[92,84,66,48,28].map((s,i)=>L(["xl","lg","md","sm","xs"][i]+" · "+s,`<span class="av img" style="width:${s}px;height:${s}px"></span>`)).join("")}</div><div class="row" style="gap:20px">${L("blank-gray",`<span class="av" style="width:48px;height:48px">${fl("user",30)}</span>`)}${L("blank-black",`<span class="av bk" style="width:48px;height:48px;color:var(--az-n80)">${fl("user",30)}</span>`)}${L("host",`<span class="av" style="width:48px;height:48px;background:var(--az-mint-5);color:var(--az-mint-on)">${ic("ticket",24)}</span>`)}</div>`),
   "divider": () => S("Preview", `<div class="col" style="gap:24px">${L("sm · 1px · 328",`<div style="width:360px;padding:0 16px;background:#fff;border-radius:8px"><div style="height:20px"></div><div class="dv" style="height:1px"></div><div style="height:20px"></div></div>`)}${L("lg · 6px · 360",`<div style="width:360px;background:#fff;border-radius:8px;overflow:hidden"><div style="height:20px"></div><div class="dv" style="height:6px"></div><div style="height:20px"></div></div>`)}</div>`),
   "pagination-dot": () => S("Preview", `<div class="row" style="gap:32px">${[1,2,3].map(n=>L("selection "+n,`<div class="dots">${[1,2,3,4,5].map(i=>`<i class="${i===n?"on":""}"></i>`).join("")}</div>`)).join("")}</div>`),
-  "time-card": () => `<div class="tcx-demo"><div class="tcx-tabs" role="tablist"><button type="button" role="tab" data-tcx-tab="preview" aria-selected="true">Preview</button><button type="button" role="tab" data-tcx-tab="code" aria-selected="false">Prototype Code</button></div><div class="stage stage-primary tcx-stage" data-tcx-panel="preview"><span class="stage-label">Preview</span><div class="stage-inner az">${tcx()}<p class="tcx-hint">마우스를 올려 기울이고, 카드를 클릭해 뒤집어 보세요</p></div></div><div class="tcx-code" data-tcx-panel="code" hidden><div class="tcx-langs"><span role="tablist">${[["html","HTML"],["css","CSS"],["js","JavaScript"]].map(([k,t],i)=>`<button type="button" role="tab" data-tcx-lang="${k}" aria-selected="${i===0}">${t}</button>`).join("")}</span><button type="button" class="tcx-copy">복사</button></div>${Object.keys(TCX_CODE).map((k,i)=>`<pre data-tcx-code="${k}" ${i?"hidden":""}><code>${esc(TCX_CODE[k])}</code></pre>`).join("")}</div></div>`,
+  "time-card": () => `<div class="tcx-demo"><div class="tcx-tabs" role="tablist"><button type="button" role="tab" data-tcx-tab="preview" aria-selected="true">Preview</button><button type="button" role="tab" data-tcx-tab="code" aria-selected="false">Prototype Code</button></div><div class="stage stage-primary tcx-stage" data-tcx-panel="preview"><span class="stage-label">Preview</span><div class="stage-inner az">${tcx()}<p class="tcx-hint">마우스를 올리거나 길게 눌러 빛을 움직이고, 탭해 뒤집어 보세요</p></div></div><div class="tcx-code" data-tcx-panel="code" hidden><div class="tcx-langs"><span role="tablist">${[["html","HTML"],["css","CSS"],["js","JavaScript"]].map(([k,t],i)=>`<button type="button" role="tab" data-tcx-lang="${k}" aria-selected="${i===0}">${t}</button>`).join("")}</span><button type="button" class="tcx-copy">복사</button></div>${Object.keys(TCX_CODE).map((k,i)=>`<pre data-tcx-code="${k}" ${i?"hidden":""}><code>${esc(TCX_CODE[k])}</code></pre>`).join("")}</div></div>`,
   "app-bar": () => S("Preview", `<div class="col" style="gap:16px">${L("left · text",`<div class="appbar"><span class="l">${ic("left",24,2.2)}<span class="tt">마이페이지</span></span><span class="r">${ic("search",28)}${ic("bell",28)}</span></div>`)}${L("center · text",`<div class="appbar"><span>${ic("left",24,2.2)}</span><span class="tt c">겐바 상세</span><span class="r">${ic("more",28)}</span></div>`)}${L("left · progress-bar",`<div class="appbar" style="justify-content:flex-start;gap:12px"><span>${ic("left",24,2.2)}</span><div class="pb" style="width:88px"><i class="on"></i><i class="on"></i><i></i><i></i></div></div>`)}</div>`),
   "tabs": () => S("Preview", `<div class="col" style="gap:16px">${L("count 3",`<div class="tabs"><div class="on">라인업</div><div>타임테이블</div><div>공지</div></div>`)}${L("count 2",`<div class="tabs"><div>예정</div><div class="on">지난 공연</div></div>`)}</div>`),
   "section-title": () => S("Preview", `<div class="col">${L("default",`<div class="st"><div class="r1"><b>새로 데뷔한 아이돌</b><span class="more">더보기${ic("right",16)}</span></div><small>이번 주 새로 등록된 아티스트예요</small></div>`)}</div>`),
@@ -1847,18 +1931,20 @@ route();
 /* Time Card interaction (tilt · flip) */
 { // 블록으로 감싸서 페이지의 다른 변수와 이름이 겹치지 않게 해요
   const TILT = 14; // 최대 기울기(도)
+  const LONG_PRESS = 420; // 모바일에서 홀로그램이 켜지는 시간(ms)
+  const MOVE_LIMIT = 10; // 스크롤과 롱터치를 구분하는 이동 거리(px)
   const reduce = matchMedia("(prefers-reduced-motion: reduce)");
   const finePointer = matchMedia("(hover: hover) and (pointer: fine)");
   const find = e => e.target.closest && e.target.closest(".time-card");
   const set = (el, vars) => { for (const k in vars) el.style.setProperty(k, vars[k]); };
   let pointerFrame = 0;
   let pendingPointer = null;
+  let touchPress = null;
+  const suppressClickUntil = new WeakMap();
 
-  // 기울이기 + 광택: 포인터 이벤트를 화면 갱신 주기에 맞춰 한 번만 처리해요
-  document.addEventListener("pointermove", e => {
-    if (!finePointer.matches) return;
-    const el = find(e); if (!el) return;
-    pendingPointer = { el, clientX: e.clientX, clientY: e.clientY };
+  // 기울이기 + 광택: 포인터 위치 계산을 화면 갱신 주기에 맞춰 한 번만 처리해요
+  const queuePointer = (el, clientX, clientY) => {
+    pendingPointer = { el, clientX, clientY };
     if (pointerFrame) return;
     pointerFrame = requestAnimationFrame(() => {
       pointerFrame = 0;
@@ -1875,15 +1961,81 @@ route();
       const t = TILT * 2;
       set(p.el, { "--rx": (0.5 - y) * t, "--ry": (x - 0.5) * t, "--x": x * 100, "--y": y * 100, "--a": 1 });
     });
+  };
+
+  const reset = el => {
+    if (pendingPointer && pendingPointer.el === el) pendingPointer = null;
+    el.classList.remove("is-moved", "is-hover", "is-pressing");
+    set(el, { "--rx": 0, "--ry": 0, "--x": 50, "--y": 50, "--a": 0 });
+  };
+
+  // 데스크톱에서는 마우스를 따라 기울여요
+  document.addEventListener("pointermove", e => {
+    if (!finePointer.matches || e.pointerType === "touch") return;
+    const el = find(e); if (el) queuePointer(el, e.clientX, e.clientY);
   });
 
   // 카드 밖으로 나가면 원위치
   document.addEventListener("pointerout", e => {
+    if (!finePointer.matches || e.pointerType === "touch") return;
     const el = find(e); if (!el || el.contains(e.relatedTarget)) return;
-    if (pendingPointer && pendingPointer.el === el) pendingPointer = null;
     if (pointerFrame) { cancelAnimationFrame(pointerFrame); pointerFrame = 0; }
-    el.classList.remove("is-moved", "is-hover");
-    set(el, { "--rx": 0, "--ry": 0, "--x": 50, "--y": 50, "--a": 0 });
+    reset(el);
+  });
+
+  // 모바일에서는 420ms 동안 길게 누르면 홀로그램을 켜요
+  document.addEventListener("pointerdown", e => {
+    if (e.pointerType !== "touch" || !e.isPrimary) return;
+    const el = find(e); if (!el) return;
+    if (touchPress) {
+      clearTimeout(touchPress.timer);
+      reset(touchPress.el);
+    }
+    el.classList.add("is-pressing");
+    const press = { el, id: e.pointerId, startX: e.clientX, startY: e.clientY, x: e.clientX, y: e.clientY, activated: false, timer: 0 };
+    press.timer = setTimeout(() => {
+      if (touchPress !== press || !el.isConnected) return;
+      press.activated = true;
+      el.classList.add("is-moved", "is-hover");
+      queuePointer(el, press.x, press.y);
+    }, LONG_PRESS);
+    touchPress = press;
+  });
+
+  document.addEventListener("pointermove", e => {
+    const press = touchPress;
+    if (!press || e.pointerId !== press.id) return;
+    press.x = e.clientX;
+    press.y = e.clientY;
+    const distance = Math.hypot(e.clientX - press.startX, e.clientY - press.startY);
+    if (!press.activated && distance > MOVE_LIMIT) {
+      clearTimeout(press.timer);
+      reset(press.el);
+      touchPress = null;
+      return;
+    }
+    if (press.activated) {
+      e.preventDefault();
+      queuePointer(press.el, e.clientX, e.clientY);
+    }
+  }, { passive: false });
+
+  const finishTouch = (e, cancelled = false) => {
+    const press = touchPress;
+    if (!press || e.pointerId !== press.id) return;
+    clearTimeout(press.timer);
+    if (press.activated && !cancelled) {
+      suppressClickUntil.set(press.el, performance.now() + 700);
+      e.preventDefault();
+    }
+    reset(press.el);
+    touchPress = null;
+  };
+  document.addEventListener("pointerup", e => finishTouch(e));
+  document.addEventListener("pointercancel", e => finishTouch(e, true));
+  document.addEventListener("contextmenu", e => {
+    const el = find(e);
+    if (el && (touchPress?.el === el || !finePointer.matches)) e.preventDefault();
   });
 
   // CSS transition이라 동작 중 다시 눌러도 현재 각도에서 자연스럽게 반전돼요
@@ -1893,7 +2045,14 @@ route();
   };
 
   // 네이티브 button이 Enter/Space를 click으로 변환하므로 별도 keydown 처리는 필요 없어요
-  document.addEventListener("click", e => { const el = find(e); if (el) flip(el); });
+  document.addEventListener("click", e => {
+    const el = find(e); if (!el) return;
+    if ((suppressClickUntil.get(el) || 0) > performance.now()) {
+      e.preventDefault();
+      return;
+    }
+    flip(el);
+  });
 }
 /* Time Card demo: Preview/Code tabs + copy */
 document.addEventListener("click", e => {
