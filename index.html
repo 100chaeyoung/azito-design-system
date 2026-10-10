@@ -370,26 +370,26 @@ body[data-page="foundations"] .thumb{height:180px}
 .dv{background:var(--az-d1)}
 /* ---- Time Card interaction ---- */
 /* --w 하나로 카드 크기를 바꿔요. 비율(9:13)과 모서리는 따라와요 */
-.time-card{--w:360px;--rx:0;--ry:0;--x:50;--y:50;--a:0;--s:1;--p:1;
+.time-card{--w:360px;--rx:0;--ry:0;--x:50;--y:50;--a:0;--g:1;--s:1;--p:1;
   appearance:none;display:block;position:relative;width:min(var(--w),100%);aspect-ratio:9/13;padding:0;border:0;
   background:none;color:inherit;text-align:initial;cursor:pointer;user-select:none;perspective:1600px;
   touch-action:none;-webkit-touch-callout:none}
 .time-card.is-flipped{--s:-1}
-.time-card.is-pressing{--p:.985}
+.time-card.is-pressing{--p:.985;--g:.6}
 .time-card:focus-visible{outline:2px solid currentColor;outline-offset:8px;border-radius:8% / 5.54%}
 
 /* 카드 뒤 빛 (aura) — 두 겹이 커서를 따라 서로 반대 방향으로 움직여요 */
-.time-card-aura{display:block;position:absolute;inset:0;pointer-events:none;opacity:var(--a);
+.time-card-aura{display:block;position:absolute;inset:0;pointer-events:none;opacity:calc(var(--a)*var(--g));
   transition:opacity 1.4s cubic-bezier(.4,0,.2,1)}
 .time-card.is-hover .time-card-aura{transition:opacity .6s ease}
-.time-card-glow{position:absolute;left:50%;top:50%;width:1000px;height:1000px;border-radius:50%;filter:blur(90px);
+.time-card-glow{position:absolute;left:50%;top:50%;width:calc(var(--w)*2.7778);height:calc(var(--w)*2.7778);border-radius:50%;filter:blur(calc(var(--w)*.25));
   background:radial-gradient(closest-side,oklch(.88 .2 320/.9) 0%,oklch(.8 .18 280/.55) 35%,oklch(.72 .16 230/.25) 58%,transparent 78%);
-  translate:calc(-50% + (var(--x) - 50)*1.6px) calc(-50% + (var(--y) - 50)*1.6px);
+  translate:calc(-50% + (var(--x) - 50)*.16%) calc(-50% + (var(--y) - 50)*.16%);
   transition:translate .5s cubic-bezier(.22,1,.36,1);
   animation:time-card-breathe 7s ease-in-out infinite paused}
-.time-card-glow+.time-card-glow{width:860px;height:860px;filter:blur(100px);
+.time-card-glow+.time-card-glow{width:calc(var(--w)*2.3889);height:calc(var(--w)*2.3889);filter:blur(calc(var(--w)*.2778));
   background:radial-gradient(closest-side,oklch(.87 .18 195/.8) 0%,oklch(.8 .15 225/.4) 45%,transparent 76%);
-  translate:calc(-50% + (var(--x) - 50)*-1.9px) calc(-50% + (var(--y) - 50)*-1.9px);
+  translate:calc(-50% + (var(--x) - 50)*-.221%) calc(-50% + (var(--y) - 50)*-.221%);
   animation:time-card-breathe-soft 9s ease-in-out infinite reverse paused}
 /* 보이지 않을 때는 숨쉬기를 멈춰서 자원을 아껴요 */
 .time-card.is-hover .time-card-glow{animation-play-state:running}
