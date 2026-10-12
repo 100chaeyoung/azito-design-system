@@ -1345,7 +1345,7 @@ PAGES.elevation.html=`<div class="elevation-list">
   <div class="elevation-row"><div class="elevation-preview elv-tile"><i class="elv-icon" style="filter:drop-shadow(0 -1px 4px rgba(0,0,0,.1))"><svg width="52" height="52" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M21.7337 5.50934C21.7337 4.93987 21.2724 4.47852 20.7029 4.47852H3.69488C3.16117 4.47852 2.72227 4.88373 2.66925 5.40345L2.66406 5.50934V9.76134C2.66406 10.3308 3.12542 10.7922 3.69488 10.7922L3.80596 10.7984C4.35462 10.855 4.79006 11.325 4.79006 11.8873C4.79006 12.4872 4.29472 12.9825 3.69488 12.9825C3.12542 12.9825 2.66406 13.4439 2.66406 14.0133V18.2654C2.66406 18.8348 3.12542 19.2962 3.69488 19.2962H20.7029C21.2724 19.2962 21.7337 18.8348 21.7337 18.2654V14.0133C21.7337 13.4439 21.2724 12.9825 20.7029 12.9825C20.1031 12.9825 19.6077 12.4872 19.6077 11.8873C19.6077 11.2875 20.1031 10.7922 20.7029 10.7922C21.2724 10.7922 21.7337 10.3308 21.7337 9.76134V5.50934ZM8.6062 10.9627C8.6062 8.70916 11.1149 8.09262 12.2098 9.59145C13.294 8.09262 15.8134 8.70916 15.8134 10.9627C15.8134 12.8868 13.1771 14.5238 12.4117 14.9596C12.2842 15.034 12.1354 15.034 12.0078 14.9596C11.2531 14.5344 8.6062 12.8974 8.6062 10.9627Z" fill="#1C1E22"/></svg></i></div><div class="elevation-copy"><b>Shadow/SpecialTicketMini</b><span>스페셜 티켓 아이콘 전용 · 살짝 도드라져 보이게 해요</span></div></div>
 </div>`;
 
-const UNPUBLISHED_COMPONENTS = new Set(["bottom-sheet", "failback"]);
+const UNPUBLISHED_COMPONENTS = new Set(["bottom-sheet", "failback", "progress-bar"]);
 const NAV = [
   {h:"시작하기", items:["overview","usage"]},
   {h:"Foundations", items:["foundations","color","typography","spacing","radius","stroke","elevation","layout","iconography"]},
@@ -1353,7 +1353,7 @@ const NAV = [
     ["Actions",["action-button","text-button","icon-button","cta-module"]],
     ["Selection",["checkbox","radio","toggle","control-chip"]],
     ["Input",["text-field","dropdown"]],
-    ["Feedback",["toast","dialog","state-feedback","spinner","progress-bar","dimmer"]],
+    ["Feedback",["toast","dialog","state-feedback","spinner","dimmer"]],
     ["Display",["badge","avatar","divider","pagination-dot"]],
     ["Card",["time-card"]],
     ["Navigation",["app-bar","tabs","section-title","bottom-navigation","os"]]
