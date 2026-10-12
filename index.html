@@ -497,7 +497,8 @@ body[data-page="foundations"] .thumb{height:180px}
 .anat-mark.al-r.out>.al{right:auto;left:50%;align-items:flex-start}.anat-mark.al-r.out::before{right:auto;left:50%}
 .anat-mark.hi>.al{bottom:calc(100% + 66px)}.anat-mark.hi::before{height:58px}
 .anat-fig.in-stage:has(.hi){padding-top:110px}
-.anat-block .tf{background:transparent}
+.anat-wrap{align-self:stretch;display:flex;justify-content:center}
+.anat-wrap .tf{background:transparent}
 .anat-grp{position:relative;outline:1px dashed #8B5CF6;outline-offset:6px}
 .anat-grp::after{content:attr(data-g);position:absolute;top:calc(100% + 16px);left:0;font-size:13px;line-height:18px;font-weight:600;color:#8B5CF6}
 
@@ -1837,9 +1838,8 @@ const PREV = {
     const clr=`<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="var(--az-n50,#A0A5B1)"/><path d="M5.5 5.5l5 5M10.5 5.5l-5 5" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>`;
     const def=`<div class="col ab-flat" style="gap:24px">${L("Alignment=Left · Content=Text",`<div class="appbar"><span class="l">${ic("left",24,2.2)}<span class="tt">마이페이지</span></span><span class="r">${ic("search",28)}${ic("bell",28)}</span></div>`)}${L("Alignment=Left · Content=Logo",`<div class="appbar"><span class="l">${ic("left",24,2.2)}<span class="ab-logo">${wm}</span></span><span class="r">${ic("search",28)}${ic("bell",28)}</span></div>`)}${L("Alignment=Left · Content=Progress bar",`<div class="appbar" style="justify-content:flex-start;gap:12px"><span>${ic("left",24,2.2)}</span><div class="pb" style="width:88px"><i class="on"></i><i class="on"></i><i></i><i></i></div></div>`)}${L("Alignment=Center · Content=Text",`<div class="appbar"><span>${ic("left",24,2.2)}</span><span class="tt c">겐바 상세</span><span class="r">${ic("more",28)}</span></div>`)}</div>`;
     const sea=`<div class="col ab-flat">${L("AppBar · Search",`<div class="appbar" style="justify-content:flex-start;gap:8px"><span>${ic("left",24,2.2)}</span><div class="ab-search"><span>그룹 또는 멤버 이름을 입력하세요</span>${clr}${ic("search",20)}</div></div>`)}</div>`;
-    const anat=`<div class="anat-fig in-stage"><div class="anat-bar"><span class="anat-slot al-l">${ic("left",24,2.2)}<em class="al">Leading<small>.LeadingElement</small></em></span><span class="anat-slot anat-grow al-c"><span class="anat-tt">Title</span><em class="al">Content<small>.ContentText</small></em></span><span class="anat-slot al-r"><span class="anat-tr">${ic("search",28)}${ic("bell",28)}</span><em class="al">Trailing<small>.Trailing elements</small></em></span></div></div>`;
     const grp=(t,b)=>`<div class="ab-g"><span class="ab-gl">${t}</span>${b}</div>`;
-    return S("Preview",`<div class="ab-groups">${grp("Anatomy",anat)}${grp("AppBar/Default",def)}${grp("AppBar · Search",sea)}</div>`); },
+    return S("Preview",`<div class="ab-groups">${grp("AppBar/Default",def)}${grp("AppBar · Search",sea)}</div>`); },
   "tabs": () => S("Preview", `<div class="col" style="gap:16px">${L("count 3",`<div class="tabs"><div class="on">라인업</div><div>타임테이블</div><div>공지</div></div>`)}${L("count 2",`<div class="tabs"><div>예정</div><div class="on">지난 공연</div></div>`)}</div>`),
   "section-title": () => S("Preview", `<div class="col">${L("default",`<div class="st"><div class="r1"><b>새로 데뷔한 아이돌</b><span class="more">더보기${ic("right",16)}</span></div><small>이번 주 새로 등록된 아티스트예요</small></div>`)}</div>`),
   "bottom-navigation": () => S("Preview", `<div class="bnav">${[["home","홈",1],["star","아티스트"],["play","콘텐츠"],["cal","캘린더"],["ticket","나의 일정"],["user","마이페이지"]].map(([i,t,on])=>`<div class="${on?"on":""}">${ic(i,28,1.7)}${t}</div>`).join("")}</div>`),
@@ -2453,6 +2453,7 @@ document.getElementById("menuBtn").addEventListener("click",e=>{const s=document
 /* Component anatomy figures (callouts) */
 const AL=(t,sub)=>`<em class="al">${t}${sub?`<small>${sub}</small>`:""}</em>`;
 const ANAT={
+  "app-bar":()=>`<div class="anat-fig in-stage"><div class="anat-bar"><span class="anat-slot al-l">${ic("left",24,2.2)}<em class="al">Leading<small>.LeadingElement</small></em></span><span class="anat-slot anat-grow al-c"><span class="anat-tt">Title</span><em class="al">Content<small>.ContentText</small></em></span><span class="anat-slot al-r"><span class="anat-tr">${ic("search",28)}${ic("bell",28)}</span><em class="al">Trailing<small>.Trailing elements</small></em></span></div></div>`,
   "action-button":()=>`<div class="anat-fig in-stage"><span class="anat-mark al-b"><span class="btn primary lg" style="gap:8px;padding:0 20px"><span class="anat-mark al-l out">${ic("plus",20,2)}${AL("Prefix Icon","optional")}</span><span class="anat-mark al-c hi">Label${AL("Label")}</span><span class="anat-mark al-r out">${ic("right",20,2)}${AL("Suffix Icon","optional")}</span></span>${AL("Container")}</span></div>`,
   "text-button":()=>`<div class="anat-fig in-stage"><span class="tbtn md" style="gap:12px"><span class="anat-mark al-l out">${ic("plus",20,2)}${AL("Prefix Icon","optional")}</span><span class="anat-mark al-c hi">Label${AL("Label")}</span><span class="anat-mark al-r out">${ic("right",20,2)}${AL("Suffix Icon","optional")}</span></span></div>`,
   "section-title":()=>`<div class="anat-fig in-stage"><div class="st" style="gap:12px"><div class="r1"><b class="anat-mark al-l">새로 데뷔한 아이돌${AL("Title")}</b><span class="more anat-mark al-r">더보기${ic("right",16)}${AL("Trailing","더보기")}</span></div><small class="anat-mark al-b" style="align-self:flex-start">Caption Text${AL("Caption","optional")}</small></div></div>`,
@@ -2464,9 +2465,7 @@ const ANAT={
 };
 function anatInject(id,h){
   if(!ANAT[id]) return h;
-  const tag='<div class="stage-inner az">', k=h.indexOf(tag); if(k<0) return h;
-  const at=k+tag.length;
-  return h.slice(0,at)+`<div class="anat-block"><span class="ab-gl">Anatomy</span>${ANAT[id]()}</div>`+h.slice(at);
+  return S("Anatomy",`<div class="anat-wrap">${ANAT[id]()}</div>`)+h;
 }
 
 /* App Bar anatomy figure */
