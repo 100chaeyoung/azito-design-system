@@ -461,6 +461,20 @@ body[data-page="foundations"] .thumb{height:180px}
 .appbar .l{display:flex;align-items:center;gap:4px}
 .appbar .r{display:flex;align-items:center;gap:24px;color:var(--az-icon)}
 .appbar .c{position:absolute;left:50%;transform:translateX(-50%)}
+.anat-fig{display:flex;justify-content:center;padding:84px 24px 48px;margin:16px 0 24px;border-radius:20px;background:var(--bg-soft)}
+.anat-bar{width:360px;height:48px;display:flex;align-items:center;gap:12px;color:var(--az-icon)}
+.anat-slot{position:relative;display:flex;align-items:center;height:40px;padding:0 4px;border-radius:6px;outline:1px dashed #8B5CF6;outline-offset:2px}
+.anat-grow{flex:1}
+.anat-fig.in-stage{background:none;padding:76px 0 8px;margin:0;justify-content:flex-start}
+.anat-fig.in-stage .anat-slot::after{content:none}
+.anat-slot .al{position:absolute;bottom:calc(100% + 28px);font-style:normal;font-size:13px;line-height:18px;font-weight:600;color:#8B5CF6;white-space:nowrap;display:flex;flex-direction:column}
+.anat-slot .al small{font-size:12px;font-weight:400;opacity:.8}
+.anat-slot.al-l .al{left:0}.anat-slot.al-c .al{left:50%;transform:translateX(-50%);align-items:center}.anat-slot.al-r .al{right:0;align-items:flex-end}
+.anat-slot.al-l::before{left:14px}.anat-slot.al-r::before{left:auto;right:14px}
+.anat-tt{font-size:20px;line-height:24px;font-weight:700;color:var(--az-n100)}
+.anat-tr{display:flex;gap:24px}
+.anat-slot::before{content:"";position:absolute;left:50%;bottom:calc(100% + 4px);height:22px;border-left:1px solid #8B5CF6}
+.anat-slot::after{content:attr(data-l);position:absolute;left:50%;bottom:calc(100% + 28px);transform:translateX(-50%);font-size:13px;line-height:18px;font-weight:500;color:#8B5CF6;white-space:nowrap}
 .appbar .ab-logo{display:inline-flex;margin-left:4px}.appbar .ab-logo svg{width:57px;height:24px;display:block}.appbar .ab-logo svg path{fill:var(--az-n100)}
 .ab-flat .appbar{background:transparent;padding:0}
 .appbar .ab-search{flex:1;height:40px;display:flex;align-items:center;gap:8px;padding:0 12px 0 16px;border-radius:12px;background:transparent;box-shadow:inset 0 0 0 1px var(--az-d1);font-size:14px;line-height:20px;color:var(--az-caption);color:var(--az-icon)}
@@ -1780,9 +1794,10 @@ const PREV = {
   "time-card": () => `<div class="tcx-demo"><p class="tcx-lead">개발 전 인터랙션 아이디어를 동작으로 확인해요.</p><div class="tcx-tabs" role="tablist"><button type="button" role="tab" data-tcx-tab="preview" aria-selected="true">Preview</button><button type="button" role="tab" data-tcx-tab="code" aria-selected="false">Code</button></div><div class="stage stage-primary tcx-stage" data-tcx-panel="preview"><span class="stage-label">Preview</span><div class="stage-inner az">${tcx()}<p class="tcx-hint">카드에 손가락을 댄 채 움직여 기울기와 빛을 조절해 보세요. 짧게 탭하면 뒤집혀요</p></div></div><div class="tcx-code" data-tcx-panel="code" hidden><div class="tcx-langs"><span role="tablist">${[["css","CSS"],["js","JavaScript"],["html","HTML"]].map(([k,t],i)=>`<button type="button" role="tab" data-tcx-lang="${k}" aria-selected="${i===0}">${t}</button>`).join("")}</span><button type="button" class="tcx-copy">복사</button></div>${["css","js"].map((k,i)=>`<pre data-tcx-code="${k}" ${i?"hidden":""}><code>${TCX_HL[k](TCX_CODE[k])}</code></pre>`).join("")}<div class="tcx-note" data-tcx-code="html" hidden><p>이 프로토타입은 모션 검증에 집중해 단일 이미지로 구현했어요.<br>실제 컴포넌트 구조는 개발 단계에서 이어서 구현할 예정이에요.<br>협업을 통해 완전해질 문서 시스템을 기대해주세요!</p></div></div></div>`,
   "app-bar": () => { const wm=(document.querySelector(".logo .wordmark")||{}).outerHTML||"AZITO";
     const clr=`<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="var(--az-n50,#A0A5B1)"/><path d="M5.5 5.5l5 5M10.5 5.5l-5 5" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>`;
-    const def=`<div class="col ab-flat" style="gap:24px">${L("left · text",`<div class="appbar"><span class="l">${ic("left",24,2.2)}<span class="tt">마이페이지</span></span><span class="r">${ic("search",28)}${ic("bell",28)}</span></div>`)}${L("left · logo",`<div class="appbar"><span class="l">${ic("left",24,2.2)}<span class="ab-logo">${wm}</span></span><span class="r">${ic("search",28)}${ic("bell",28)}</span></div>`)}${L("left · progress-bar",`<div class="appbar" style="justify-content:flex-start;gap:12px"><span>${ic("left",24,2.2)}</span><div class="pb" style="width:88px"><i class="on"></i><i class="on"></i><i></i><i></i></div></div>`)}${L("center · text",`<div class="appbar"><span>${ic("left",24,2.2)}</span><span class="tt c">겐바 상세</span><span class="r">${ic("more",28)}</span></div>`)}</div>`;
-    const sea=`<div class="col ab-flat">${L("search",`<div class="appbar" style="justify-content:flex-start;gap:8px"><span>${ic("left",24,2.2)}</span><div class="ab-search"><span>그룹 또는 멤버 이름을 입력하세요</span>${clr}${ic("search",20)}</div></div>`)}</div>`;
-    return S("AppBar/Default",def)+S("AppBar · Search",sea); },
+    const def=`<div class="col ab-flat" style="gap:24px">${L("Alignment=Left · Content=Text",`<div class="appbar"><span class="l">${ic("left",24,2.2)}<span class="tt">마이페이지</span></span><span class="r">${ic("search",28)}${ic("bell",28)}</span></div>`)}${L("Alignment=Left · Content=Logo",`<div class="appbar"><span class="l">${ic("left",24,2.2)}<span class="ab-logo">${wm}</span></span><span class="r">${ic("search",28)}${ic("bell",28)}</span></div>`)}${L("Alignment=Left · Content=Progress bar",`<div class="appbar" style="justify-content:flex-start;gap:12px"><span>${ic("left",24,2.2)}</span><div class="pb" style="width:88px"><i class="on"></i><i class="on"></i><i></i><i></i></div></div>`)}${L("Alignment=Center · Content=Text",`<div class="appbar"><span>${ic("left",24,2.2)}</span><span class="tt c">겐바 상세</span><span class="r">${ic("more",28)}</span></div>`)}</div>`;
+    const sea=`<div class="col ab-flat">${L("AppBar · Search",`<div class="appbar" style="justify-content:flex-start;gap:8px"><span>${ic("left",24,2.2)}</span><div class="ab-search"><span>그룹 또는 멤버 이름을 입력하세요</span>${clr}${ic("search",20)}</div></div>`)}</div>`;
+    const anat=`<div class="anat-fig in-stage"><div class="anat-bar"><span class="anat-slot al-l">${ic("left",24,2.2)}<em class="al">Leading<small>.LeadingElement</small></em></span><span class="anat-slot anat-grow al-c"><span class="anat-tt">Title</span><em class="al">Content<small>.ContentText</small></em></span><span class="anat-slot al-r"><span class="anat-tr">${ic("search",28)}${ic("bell",28)}</span><em class="al">Trailing<small>.Trailing elements</small></em></span></div></div>`;
+    return S("Anatomy",anat)+S("AppBar/Default",def)+S("AppBar · Search",sea); },
   "tabs": () => S("Preview", `<div class="col" style="gap:16px">${L("count 3",`<div class="tabs"><div class="on">라인업</div><div>타임테이블</div><div>공지</div></div>`)}${L("count 2",`<div class="tabs"><div>예정</div><div class="on">지난 공연</div></div>`)}</div>`),
   "section-title": () => S("Preview", `<div class="col">${L("default",`<div class="st"><div class="r1"><b>새로 데뷔한 아이돌</b><span class="more">더보기${ic("right",16)}</span></div><small>이번 주 새로 등록된 아티스트예요</small></div>`)}</div>`),
   "bottom-navigation": () => S("Preview", `<div class="bnav">${[["home","홈",1],["star","아티스트"],["play","콘텐츠"],["cal","캘린더"],["ticket","나의 일정"],["user","마이페이지"]].map(([i,t,on])=>`<div class="${on?"on":""}">${ic(i,28,1.7)}${t}</div>`).join("")}</div>`),
@@ -2393,6 +2408,8 @@ const SEC_LINK={home:"overview",usage:"usage",updates:"updates",found:"foundatio
 const route=()=>render((location.hash||"#overview").slice(1));
 window.addEventListener("hashchange",route);
 document.getElementById("menuBtn").addEventListener("click",e=>{const s=document.getElementById("side");const o=s.classList.toggle("open");e.currentTarget.setAttribute("aria-expanded",o?"true":"false");});
+/* App Bar anatomy figure */
+PAGES["app-bar"].html=PAGES["app-bar"].html.replace(/<pre><code>\[ Leading[\s\S]*?<\/pre>/,()=>`<div class="anat-fig"><div class="anat-bar"><span class="anat-slot" data-l="Leading">${ic("left",24,2.2)}</span><span class="anat-slot anat-grow" data-l="Content"><span class="anat-tt">Title</span></span><span class="anat-slot" data-l="Trailing"><span class="anat-tr">${ic("search",28)}${ic("bell",28)}</span></span></div></div>`);
 route();
 </script>
 <script>
