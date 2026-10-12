@@ -912,6 +912,8 @@ body:not([data-page="foundations"]) .grid{gap:32px 16px}
 .component-preview .cap{font-family:var(--font);font-size:12px;line-height:17px;font-weight:500;color:var(--fg-3)}
 .component-preview .row{column-gap:24px;row-gap:28px}
 .component-preview .avatar-preview-items{display:flex;align-items:flex-start;gap:20px;min-width:max-content}
+.component-preview .avatar-preview-items.avatar-types{display:grid;grid-template-columns:repeat(6,94px) repeat(3,158px);column-gap:0}
+.component-preview .avatar-preview-items.avatar-sizes{display:grid;grid-template-columns:92px 84px 66px 48px 52px;column-gap:24px}
 .component-preview .avatar-preview-item{display:flex;flex-direction:column;align-items:flex-start;gap:12px;white-space:nowrap}
 .component-preview .avatar-preview-item img{display:block;max-width:none}
 .prop-group{margin-top:56px}
@@ -1759,8 +1761,8 @@ const PREV = {
     const item=(name,file)=>`<div class="avatar-preview-item"><span class="cap">${name}</span><img src="${encodeURI(file)}" alt=""></div>`;
     const types=[["Blank-Gray","Avatar/Variant=Blank-Gray.svg"],["Host","Avatar/Variant=Host.svg"],["Idol","Avatar/Variant=idol.svg"],["Blank-Bk","Avatar/Variant=Blank-Bk.svg"],["Fan meeting","Avatar/Variant=Fan meeting.svg"],["Event","Avatar/Variant=Event.svg"],["Blank-Bk · 2×","Avatar/Variant=Blank-Bk-2x.svg"],["Fan meeting · 2×","Avatar/Variant=Fan meeting-2x.svg"],["Event · 2×","Avatar/Variant=Event-2x.svg"]];
     const sizes=[["xl · 92px","Property 1=xl.svg"],["lg · 84px","Property 1=lg.svg"],["md · 66px","Property 1=md.svg"],["sm · 48px","Property 1=sm.svg"],["xs · 28px","Property 1=xs.svg"]];
-    return S("Avatar/Type",`<div class="avatar-preview-items">${types.map(([name,file])=>item(name,file)).join("")}</div>`)
-      +S("ResponsiveAvatar",`<div class="avatar-preview-items">${sizes.map(([name,file])=>item(name,file)).join("")}</div>`);
+    return S("Avatar/Type",`<div class="avatar-preview-items avatar-types">${types.map(([name,file])=>item(name,file)).join("")}</div>`)
+      +S("ResponsiveAvatar",`<div class="avatar-preview-items avatar-sizes">${sizes.map(([name,file])=>item(name,file)).join("")}</div>`);
   },
   "divider": () => S("Preview", `<div class="col" style="gap:24px">${L("sm · 1px · 328",`<div style="width:360px;padding:0 16px;background:#fff;border-radius:8px"><div style="height:20px"></div><div class="dv" style="height:1px"></div><div style="height:20px"></div></div>`)}${L("lg · 6px · 360",`<div style="width:360px;background:#fff;border-radius:8px;overflow:hidden"><div style="height:20px"></div><div class="dv" style="height:6px"></div><div style="height:20px"></div></div>`)}</div>`),
   "pagination-dot": () => S("Preview", `<div class="row" style="gap:32px">${[1,2,3].map(n=>L("selection "+n,`<div class="dots">${[1,2,3,4,5].map(i=>`<i class="${i===n?"on":""}"></i>`).join("")}</div>`)).join("")}</div>`),
@@ -1914,7 +1916,8 @@ function usageSection(id){
   /* 종류가 하나뿐이면 그 안의 variant(속성값)로 나눠요. variant도 하나면 화면별로 나눠요. */
   const vr=!byType&&used.length===1&&USAGE.var&&USAGE.var[used[0]];
   const kind=byType||!!vr;
-  const ranked=(byType?sets.map(k=>[k,sumP(USAGE.per[k])]):vr?Object.entries(vr.by):Object.entries(t).filter(([,c])=>c>0)).sort((a,b)=>b[1]-a[1]);
+  const ranked=(byType?sets.map(k=>[k,sumP(USAGE.per[k])]):vr?Object.entries(vr.by):Object.entries(t).filter(([,c])=>c>0));
+  if(id!=="avatar") ranked.sort((a,b)=>b[1]-a[1]);
   const LBL=p=>byType?short(p):vr?p:PSHORT(p);
   const OP=[1,.68,.46,.28];
   const pos=ranked.filter(([,c])=>c>0);
@@ -1929,7 +1932,7 @@ function usageSection(id){
   const CAP=id==="badge"?ranked.length:8, shown=ranked.length>CAP?ranked.slice(0,CAP-1):ranked, more=ranked.slice(shown.length);
   const legend=shown.map(([p,c],i)=>`<li title="${p} · ${c}개">${dot(i)}<span class="nm">${LBL(p)}</span><span class="ct">${c.toLocaleString()}<em>개</em></span><span class="pc">${c&&total?(c/total*100).toFixed(c/total<.01?1:0):0}%</span></li>`).join("")+(more.length?`<li><i style="background:var(--line-strong)"></i><span class="nm">그 외 ${more.length}${kind?"종":"곳"}</span><span class="ct">${more.reduce((a,[,c])=>a+c,0).toLocaleString()}<em>개</em></span><span class="pc">${(more.reduce((a,[,c])=>a+c,0)/total*100).toFixed(0)}%</span></li>`:"");
   const DT=`<small class="usage-date">분석 기준 · ${USAGE.scanned.replace(/-/g,".")}</small>`;
-  const usageGroup=id==="badge"?"색상별":id==="dimmer"?"단일":id==="spinner"?"크기별":id==="dialog"?"속성 조합별":kind?"종류별":"화면별";
+  const usageGroup=id==="badge"?"색상별":id==="avatar"?"컴포넌트별":id==="dimmer"?"단일":id==="spinner"?"크기별":id==="dialog"?"속성 조합별":kind?"종류별":"화면별";
   const body=`<div class="usage-donut"><div class="dn"><svg viewBox="0 0 200 200" role="img" aria-label="${usageGroup} 사용 비율"><g transform="rotate(-90 100 100)">${arcs}</g></svg><div class="dn-c"><b>${total.toLocaleString()}<em>개</em></b><span>전체</span></div></div><div class="dn-side"><ul class="dn-legend">${legend}</ul>${DT}</div></div>`;
   return `<section class="component-usage component-section"><div class="section-heading"><div><h2 data-toc>Usage</h2></div><a class="usage-link" href="#usage">전체 현황 보기 →</a></div>
     <div class="usage-card"><p class="usage-desc"><b>${total?`${usageGroup} ${PAGES[id].title} 사용 현황`:`지금은 피그마 UI 화면에 직접 쓰인 곳이 없어요`}</b></p>${body}</div></section>`;
