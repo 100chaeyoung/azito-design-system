@@ -1113,6 +1113,11 @@ body .component-doc .usage-card{padding:0;border:0;border-radius:0;background:no
 .component-doc .usage-card .dn-legend{flex:1;min-width:0;max-width:440px;margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:2px}
 .component-doc .usage-card .dn-legend li{display:grid;grid-template-columns:10px minmax(0,1fr) 44px 64px;align-items:center;gap:12px;min-height:30px;margin:0;padding:0;font-size:14px;line-height:20px;color:var(--fg-2)}
 .dn-legend li::before,.dn-legend li::marker{content:none}
+.component-doc .usage-card .dn-legend li.dn-gh{display:flex;justify-content:space-between;min-height:0;padding:20px 0 8px;font-size:13px;font-weight:600;color:var(--fg-3);border-bottom:1px solid var(--line)}
+.component-doc .usage-card .dn-legend li.dn-gh:first-child{padding-top:0}
+.component-doc .usage-card .dn-legend li.dn-gh .ct{font-weight:600;color:var(--fg-3)}
+.component-doc .usage-card .dn-legend li.z{color:var(--fg-4,#B0B8C1)}
+.component-doc .usage-card .dn-legend li.z .ct{color:inherit}
 .dn-legend i{width:10px;height:10px;border-radius:3px}
 .dn-legend .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dn-legend .pc{text-align:right;font-size:13px;color:var(--fg-3);font-variant-numeric:tabular-nums}
@@ -1921,7 +1926,7 @@ function usageSection(id){
   /* Avatar는 Preview와 같은 분류로 보여줘요. 10.11 스캔 기준 Avatar/Type 인스턴스는 전부 Variant=idol이에요. */
   if(id==="avatar"){const idol=sumP(USAGE.per["Avatar/Type"]||{}),rv=((USAGE.var||{})["ResponsiveAvatar"]||{}).by||{};ranked.length=0;
     [["Blank-Gray",0],["Host",0],["Idol",idol],["Blank-Bk",0],["Fan meeting",0],["Event",0],["Blank-Bk · 2×",0],["Fan meeting · 2×",0],["Event · 2×",0]].forEach(r=>ranked.push(r));
-    ["xl","lg","md","sm","xs"].forEach(k=>ranked.push(["Responsive · "+k,rv["Property 1="+k]||0]));}
+    [["xl",92],["lg",84],["md",66],["sm",48],["xs",28]].forEach(([k,px])=>ranked.push([k+" · "+px+"px",rv["Property 1="+k]||0]));}
   const LBL=p=>byType?short(p):vr?p:PSHORT(p);
   const OP=[1,.68,.46,.28];
   const pos=ranked.filter(([,c])=>c>0); if(id==="avatar") pos.sort((a,b)=>b[1]-a[1]);
@@ -1934,7 +1939,12 @@ function usageSection(id){
   const arcs=!total?`<circle cx="100" cy="100" r="${R}" fill="none" stroke="var(--line-strong)" stroke-opacity=".6" stroke-width="26"/>`:segs.map(g=>{const len=g.c/total*C, d=Math.max(1.5,len-gap), a=`<circle cx="100" cy="100" r="${R}" fill="none" stroke="${g.col}" stroke-opacity="${g.op}" stroke-width="26" stroke-dasharray="${d.toFixed(2)} ${(C-d).toFixed(2)}" stroke-dashoffset="${(-off-gap/2).toFixed(2)}"/>`; off+=len; return a;}).join("");
   const dot=i=>id==="avatar"?(k=>k>=0?`<i style="background:var(--accent);opacity:${k<4?OP[k]:.16}"></i>`:`<i style="background:var(--line-strong)"></i>`)(top.findIndex(r=>r[0]===ranked[i][0])):id==="badge"?`<i style="background:${badgeColors[ranked[i][0]]}"></i>`:i<top.length?`<i style="background:var(--accent);opacity:${i<4?OP[i]:.16}"></i>`:`<i style="background:var(--line-strong)"></i>`;
   const CAP=id==="badge"||id==="avatar"?ranked.length:8, shown=ranked.length>CAP?ranked.slice(0,CAP-1):ranked, more=ranked.slice(shown.length);
-  const legend=shown.map(([p,c],i)=>`<li title="${p} · ${c}개">${dot(i)}<span class="nm">${LBL(p)}</span><span class="ct">${c.toLocaleString()}<em>개</em></span><span class="pc">${c&&total?(c/total*100).toFixed(c/total<.01?1:0):0}%</span></li>`).join("")+(more.length?`<li><i style="background:var(--line-strong)"></i><span class="nm">그 외 ${more.length}${kind?"종":"곳"}</span><span class="ct">${more.reduce((a,[,c])=>a+c,0).toLocaleString()}<em>개</em></span><span class="pc">${(more.reduce((a,[,c])=>a+c,0)/total*100).toFixed(0)}%</span></li>`:"");
+  let legend=shown.map(([p,c],i)=>`<li title="${p} · ${c}개">${dot(i)}<span class="nm">${LBL(p)}</span><span class="ct">${c.toLocaleString()}<em>개</em></span><span class="pc">${c&&total?(c/total*100).toFixed(c/total<.01?1:0):0}%</span></li>`).join("")+(more.length?`<li><i style="background:var(--line-strong)"></i><span class="nm">그 외 ${more.length}${kind?"종":"곳"}</span><span class="ct">${more.reduce((a,[,c])=>a+c,0).toLocaleString()}<em>개</em></span><span class="pc">${(more.reduce((a,[,c])=>a+c,0)/total*100).toFixed(0)}%</span></li>`:"");
+  if(id==="avatar"){
+    const row=([p,c])=>{const i=ranked.findIndex(r=>r[0]===p);return `<li class="${c?"":"z"}" title="${p} · ${c}개">${dot(i)}<span class="nm">${p}</span><span class="ct">${c.toLocaleString()}<em>개</em></span><span class="pc">${c&&total?(c/total*100).toFixed(c/total<.01?1:0):0}%</span></li>`;};
+    const grp=(h,rows)=>`<li class="dn-gh"><span>${h}</span><span class="ct">${rows.reduce((a,[,c])=>a+c,0).toLocaleString()}<em>개</em></span></li>`+rows.map(row).join("");
+    legend=grp("Avatar/Type",ranked.slice(0,9))+grp("ResponsiveAvatar",ranked.slice(9));
+  }
   const DT=`<small class="usage-date">분석 기준 · ${USAGE.scanned.replace(/-/g,".")}</small>`;
   const usageGroup=id==="badge"?"색상별":id==="avatar"?"컴포넌트별":id==="dimmer"?"단일":id==="spinner"?"크기별":id==="dialog"?"속성 조합별":kind?"종류별":"화면별";
   const body=`<div class="usage-donut"><div class="dn"><svg viewBox="0 0 200 200" role="img" aria-label="${usageGroup} 사용 비율"><g transform="rotate(-90 100 100)">${arcs}</g></svg><div class="dn-c"><b>${total.toLocaleString()}<em>개</em></b><span>전체</span></div></div><div class="dn-side"><ul class="dn-legend">${legend}</ul>${DT}</div></div>`;
