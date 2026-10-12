@@ -895,6 +895,11 @@ body:not([data-page="foundations"]) .grid{gap:32px 16px}
 .section-note{font-size:13px;line-height:20px;color:var(--fg-3);white-space:nowrap}
 .component-preview .stage{margin:0 0 16px;padding:56px 32px 32px;border:1px solid var(--line);border-radius:24px;background:var(--bg-soft);box-shadow:none}
 .component-preview .stage:last-child{margin-bottom:0}
+.component-preview .stage-fade-wrap{position:relative;display:flow-root}
+.component-preview .stage-fade-wrap::before,.component-preview .stage-fade-wrap::after{content:"";position:absolute;top:1px;bottom:1px;width:48px;pointer-events:none;z-index:2;opacity:0;transition:opacity .18s ease}
+.component-preview .stage-fade-wrap::before{left:1px;background:linear-gradient(to right,var(--bg-soft),transparent);border-radius:23px 0 0 23px}
+.component-preview .stage-fade-wrap::after{right:1px;background:linear-gradient(to left,var(--bg-soft),transparent);border-radius:0 23px 23px 0}
+.component-preview .stage-fade-wrap.has-more-left::before,.component-preview .stage-fade-wrap.has-more-right::after{opacity:1}
 .component-preview .stage-primary{padding-top:32px}
 .component-preview .stage-primary .stage-label{display:none}
 .component-preview .stage-label{top:22px;left:32px;font-family:var(--font);font-size:12px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--fg-3)}
@@ -2050,6 +2055,7 @@ function render(id){
   if(id!=="overview")html+=`<div class="pager">${prev?`<a href="#${prev}"><small>이전</small><b>${name(prev)}</b></a>`:""}${next?`<a class="next" href="#${next}"><small>다음</small><b>${name(next)}</b></a>`:""}</div>`;
   doc.innerHTML=html;
   decorate(doc);
+  initStageFades(doc);
   organizeReference(doc);
   initColorTabs(doc);
   buildToc(doc);
@@ -2110,6 +2116,32 @@ function decorate(root){
     let col=TOKEN[k];
     if(!col && /^#[0-9a-f]{6}$/i.test(k)) col=k;
     if(col){const s=document.createElement("i");s.className="chip";s.style.background=col;c.prepend(s);}
+  });
+}
+let stageFadeObserver;
+function initStageFades(root){
+  stageFadeObserver?.disconnect();
+  const stages=[...root.querySelectorAll(".component-preview .stage")];
+  if(!stages.length) return;
+  const update=stage=>{
+    const wrap=stage.parentElement;
+    wrap.classList.toggle("has-more-left",stage.scrollLeft>2);
+    wrap.classList.toggle("has-more-right",stage.scrollLeft+stage.clientWidth<stage.scrollWidth-2);
+  };
+  stageFadeObserver=new ResizeObserver(entries=>entries.forEach(({target})=>update(target.closest(".stage")||target)));
+  stages.forEach(stage=>{
+    const margin=getComputedStyle(stage).margin;
+    const wrap=document.createElement("div");
+    wrap.className="stage-fade-wrap";
+    wrap.style.margin=margin;
+    stage.before(wrap);
+    wrap.append(stage);
+    stage.style.margin="0";
+    stage.addEventListener("scroll",()=>update(stage),{passive:true});
+    stageFadeObserver.observe(stage);
+    const inner=stage.querySelector(".stage-inner");
+    if(inner) stageFadeObserver.observe(inner);
+    update(stage);
   });
 }
 function organizeReference(root){
