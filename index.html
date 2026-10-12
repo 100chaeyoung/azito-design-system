@@ -1913,7 +1913,10 @@ function usagePage(){
   const nm=k=>{const i=idOf(k);return `<a href="#${i}">${PAGES[i].title}</a> <code>${k}</code>`;};
   const legTot=USAGE.legacy.reduce((a,l)=>a+sumP(l.per),0), dsTot=all.reduce((a,k)=>a+sumP(USAGE.per[k]),0);
   const legRows=USAGE.legacy.slice().sort((a,b)=>sumP(b.per)-sumP(a.per)).map(l=>`<tr><td><code>${l.name}</code></td><td><a href="#${l.id}">${PAGES[l.id].title}</a> <code>${l.to}</code></td><td style="text-align:right">${sumP(l.per)}</td><td>${Object.entries(l.per).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([p,c])=>PSHORT(p)+" "+c).join(", ")}</td></tr>`).join("");
-  const rank=Object.keys(USAGE.map).map(i=>[i,sumP(pageTotals(USAGE.map[i]))]).sort((a,b)=>b[1]-a[1]);
+  // Published projection: assume each legacy instance is migrated 1:1 to its mapped component.
+  const migratedById=USAGE.legacy.reduce((totals,l)=>{totals[l.id]=(totals[l.id]||0)+sumP(l.per);return totals;},{});
+  const rank=Object.keys(USAGE.map).map(i=>[i,sumP(pageTotals(USAGE.map[i]))+(migratedById[i]||0)]).sort((a,b)=>b[1]-a[1]);
+  const publishedTotal=rank.reduce((total,[,n])=>total+n,0);
   const maxR=rank[0][1], nz=rank.filter(r=>r[1]>0).length;
   const [sy,sm,sd]=USAGE.scanned.split("-");
   // 미사용 사유: 스캔으로 알 수 있는 건 자동으로, 나머지는 직접 적은 값을 써요.
@@ -1951,7 +1954,7 @@ function usagePage(){
   legG.sort((x,y)=>(legById[y.id]-legById[x.id])||(y.n-x.n));
   return `<h1 class="usg-title">Usage</h1><p class="lead">컴포넌트가 UI 화면에 몇 번 쓰였는지 정리했어요.</p>
   <h2>점검이 필요한 컴포넌트<em class="h-n">0종</em><span class="h-tag">레거시 인스턴스 0개</span></h2><p>사용되지 않거나 현행 디자인 시스템으로 교체가 필요한 컴포넌트를 확인하세요.</p>
-  <div class="usg-h"><h2>디자인 시스템 인스턴스 사용량<em class="h-n">8,220</em></h2></div>
+  <div class="usg-h"><h2>디자인 시스템 인스턴스 사용량<em class="h-n">${publishedTotal.toLocaleString()}</em></h2></div>
   <div class="usage-bars usg-rank">${rank.map(([i,n],x)=>`<a class="usage-bar" href="#${i}"><span class="rk">${x+1}</span><span class="nm">${PAGES[i].title}</span><span class="tr"><i style="--p:${(n/maxR).toFixed(4)};--g:${Math.round(100*Math.pow(1-x/Math.max(1,nz-1),1.8))}%${n?"":";display:none"}"></i><span class="ct">${n.toLocaleString()}<em>개</em></span></span></a>`).join("")}</div>`;
 }
 
