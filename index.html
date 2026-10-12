@@ -538,11 +538,10 @@ body[data-page="foundations"] .thumb{height:180px}
 .bnav div{flex:1;position:relative;display:flex;flex-direction:column;align-items:center;gap:0;padding:0 0 16px;font-size:10px;font-weight:700;line-height:14px;color:var(--az-white-30);letter-spacing:0}
 .bnav div.on{color:#fff}
 .bnav svg{display:block;width:28px;height:28px;flex:none}
-.bn-items{display:flex;flex-direction:column;gap:12px}
-.bn-row{display:flex;align-items:center;gap:20px}
-.bn-rl{width:92px;font-size:12px;line-height:17px;font-weight:500;color:var(--fg-3);text-align:right}
-.bnav.bn-panel{width:auto;padding:12px 12px 0;border-top:0;box-shadow:none;gap:4px}
-.bnav.bn-panel div{flex:0 0 68px}
+.bn-items{display:flex;flex-direction:column;align-items:center;gap:32px}
+.bn-flat{display:flex;gap:4px}
+.bn-flat>div{width:68px;position:relative;display:flex;flex-direction:column;align-items:center;font-size:10px;font-weight:700;line-height:14px;letter-spacing:0;color:rgba(28,30,34,.3)}
+.bn-flat>div.on{color:var(--az-n100)}
 .bn-beta{position:absolute;left:calc(50% - 3px);top:-2px;padding:2px 3px;border-radius:99px;background:linear-gradient(rgba(0,0,0,.1),rgba(0,0,0,.1)),linear-gradient(136deg,#00E8AA 2%,#53A5DA 88%);color:#fff;font-size:8px;line-height:7px;font-weight:800;font-style:italic;letter-spacing:0}
 .os-sb{width:360px;height:36px;background:#fff;border-radius:10px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;font-size:14px;font-weight:600}
 .os-kb{width:360px;background:#D1D4DA;border-radius:10px;padding:8px 4px;display:grid;grid-template-columns:repeat(10,1fr);gap:6px}
@@ -1874,7 +1873,7 @@ const PREV = {
   "tabs": () => S("Preview", `<div class="col" style="gap:16px">${L("count 2",`<div class="tabs"><div class="on">Label</div><div>Label</div></div>`)}${L("count 3",`<div class="tabs"><div class="on">Label</div><div>Label</div><div>Label</div></div>`)}${L("count 4",`<div class="tabs"><div class="on">Label</div><div>Label</div><div>Label</div><div>Label</div></div>`)}</div>`),
   "section-title": () => S("Preview", `<div class="col" style="gap:40px">${L("Subtitle/Default",`<div class="st"><div class="r1"><span class="ht">${ic("down",24,2)}<b>새로 데뷔한 아이돌</b>${ic("down",24,2)}</span><span class="more">더보기${ic("right",16)}</span></div><small>이번 주 새로 등록된 아티스트예요</small></div>`)}${L("Subtitle/Search",`<div class="st search"><div class="r1"><b>새로 데뷔한 아이돌</b><span class="more">더보기${ic("right",16)}</span></div></div>`)}</div>`),
   "bottom-navigation": () => { const grp=(t,b)=>`<div class="ab-g"><span class="ab-gl">${t}</span>${b}</div>`;
-    const row=(lab,on)=>`<div class="bn-row"><span class="bn-rl">${lab}</span><div class="bnav bn-panel">${NAV_ITEMS.map(([k,t,,b])=>navItem(k,t,on,b)).join("")}</div></div>`;
+    const row=(lab,on)=>L(lab,`<div class="bn-flat">${NAV_ITEMS.map(([k,t,,b])=>navItem(k,t,on,b)).join("")}</div>`);
     return S("Preview",`<div class="ab-groups">${grp("NavigationBar/Group",`<div class="bnav">${NAV_GROUP.map(([k,t,on])=>navItem(k,t,on)).join("")}</div>`)}${grp("NavigationBar/Item",`<div class="bn-items">${row("Selected=ON",1)}${row("Selected=OFF",0)}</div>`)}</div>`); },
   "os": () => S("Preview", `<div class="col" style="gap:16px">${L("status bar · android",OS_SB)}${L("keyboard",`<div class="os-kb">${"ㅂㅈㄷㄱㅅㅛㅕㅑㅐㅔㅁㄴㅇㄹㅎㅗㅓㅏㅣ".split("").map(k=>`<i>${k}</i>`).join("")}</div>`)}</div>`),
 
