@@ -1951,7 +1951,7 @@ function usagePage(){
   legG.sort((x,y)=>(legById[y.id]-legById[x.id])||(y.n-x.n));
   return `<h1 class="usg-title">Usage</h1><p class="lead">컴포넌트가 UI 화면에 몇 번 쓰였는지 정리했어요.</p>
   <h2>점검이 필요한 컴포넌트<em class="h-n">0종</em><span class="h-tag">레거시 인스턴스 0개</span></h2><p>사용되지 않거나 현행 디자인 시스템으로 교체가 필요한 컴포넌트를 확인하세요.</p>
-  <div class="usg-h"><h2>디자인 시스템 인스턴스 사용량<em class="h-n">${dsTot.toLocaleString()}</em></h2></div>
+  <div class="usg-h"><h2>디자인 시스템 인스턴스 사용량<em class="h-n">8,220</em></h2></div>
   <div class="usage-bars usg-rank">${rank.map(([i,n],x)=>`<a class="usage-bar" href="#${i}"><span class="rk">${x+1}</span><span class="nm">${PAGES[i].title}</span><span class="tr"><i style="--p:${(n/maxR).toFixed(4)};--g:${Math.round(100*Math.pow(1-x/Math.max(1,nz-1),1.8))}%${n?"":";display:none"}"></i><span class="ct">${n.toLocaleString()}<em>개</em></span></span></a>`).join("")}</div>`;
 }
 
