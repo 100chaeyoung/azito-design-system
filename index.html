@@ -465,6 +465,42 @@ body[data-page="foundations"] .thumb{height:180px}
 .anat-bar{width:360px;height:48px;display:flex;align-items:center;gap:12px;color:var(--az-icon)}
 .anat-slot{position:relative;display:flex;align-items:center;height:40px;padding:0 4px;border-radius:6px;outline:1px dashed #8B5CF6;outline-offset:2px}
 .anat-grow{flex:1}
+.anat-bar{gap:24px!important}
+.anat-mark{position:relative;outline:1px dashed #8B5CF6;outline-offset:3px;border-radius:4px}
+.anat-mark>.al{position:absolute;font-style:normal;font-size:13px;line-height:18px;font-weight:600;color:#8B5CF6;white-space:nowrap;display:flex;flex-direction:column;letter-spacing:0;text-align:left}
+.anat-mark>.al small{font-size:12px;font-weight:400;opacity:.8}
+.anat-mark::before{content:"";position:absolute;border-color:#8B5CF6;border-style:solid;border-width:0}
+.anat-mark.al-l>.al,.anat-mark.al-c>.al,.anat-mark.al-r>.al{bottom:calc(100% + 30px)}
+.anat-mark.al-l>.al{left:0}.anat-mark.al-c>.al{left:50%;transform:translateX(-50%);align-items:center}.anat-mark.al-r>.al{right:0;align-items:flex-end}
+.anat-mark.al-l::before,.anat-mark.al-c::before,.anat-mark.al-r::before{bottom:calc(100% + 6px);height:22px;border-left-width:1px}
+.anat-mark.al-l::before{left:12px}.anat-mark.al-c::before{left:50%}.anat-mark.al-r::before{right:12px}
+.anat-mark.al-b>.al{top:calc(100% + 30px);left:50%;transform:translateX(-50%);align-items:center}
+.anat-mark.al-b::before{top:calc(100% + 6px);height:22px;left:50%;border-left-width:1px}
+.anat-mark.al-v>.al{left:calc(100% + 40px);top:50%;transform:translateY(-50%)}
+.anat-mark.al-v::before{left:calc(100% + 8px);top:50%;width:26px;border-top-width:1px}
+.anat-block{align-self:stretch;display:flex;flex-direction:column;gap:8px;padding-bottom:40px;margin-bottom:8px;border-bottom:1px solid var(--line)}
+.anat-block .ab-gl{align-self:flex-start}
+.anat-fig.in-stage.g{padding-bottom:40px}
+.anat-fig.in-stage.v{padding:16px 0 8px}
+.anat-fig.in-stage:has(.al-b){padding-bottom:64px}
+.anat-col{width:300px;margin-right:200px;display:flex;flex-direction:column;gap:14px}
+.anat-surf{background:transparent;border:1px solid var(--line);border-radius:16px;padding:20px}
+.anat-surf.sheet{border-radius:20px 20px 0 0;padding-top:10px}
+.anat-t{font-size:16px;line-height:22px;font-weight:700;color:var(--az-n100);text-align:center}
+.anat-d{font-size:14px;line-height:20px;color:var(--az-caption);text-align:center}
+.anat-box{display:block;height:56px;border-radius:8px;background:transparent}
+.anat-btns{display:flex;gap:8px}.anat-btns .btn{flex:1}
+.anat-handle{display:block;width:40px;height:4px;border-radius:2px;background:var(--az-d1)}
+.anat-menu{width:260px;background:transparent;border:1px solid var(--line);border-radius:12px;padding:6px 0;display:flex;flex-direction:column}
+.anat-menu>div{padding:10px 16px;font-size:15px;line-height:20px;color:var(--az-body)}
+.anat-mark.al-l.out>.al{left:auto;right:50%;align-items:flex-end;text-align:right}.anat-mark.al-l.out::before{left:50%}
+.anat-mark.al-r.out>.al{right:auto;left:50%;align-items:flex-start}.anat-mark.al-r.out::before{right:auto;left:50%}
+.anat-mark.hi>.al{bottom:calc(100% + 66px)}.anat-mark.hi::before{height:58px}
+.anat-fig.in-stage:has(.hi){padding-top:110px}
+.anat-block .tf{background:transparent}
+.anat-grp{position:relative;outline:1px dashed #8B5CF6;outline-offset:6px}
+.anat-grp::after{content:attr(data-g);position:absolute;top:calc(100% + 16px);left:0;font-size:13px;line-height:18px;font-weight:600;color:#8B5CF6}
+
 .anat-fig.in-stage{background:none;padding:52px 0 0;margin:0;justify-content:center}
 .ab-groups{align-self:stretch;width:100%;display:flex;flex-direction:column;gap:48px}
 .ab-g{display:flex;flex-direction:column;align-items:center;gap:24px}
@@ -2103,7 +2139,7 @@ function render(id){
       const history=historySection(id);
       body=body.includes('<h2 class="issues-h">')?body.replace('<h2 class="issues-h">',history+'<h2 class="issues-h">'):body+history;
       html=`<div class="component-doc"><header class="component-header"><h1>${p.title}</h1><p class="lead">${esc(p.lead)}</p>${meta}</header>
-        <section class="component-preview component-section"><div class="section-heading"><div><h2 data-toc>Preview</h2></div><span class="section-note">${id==="time-card"?"":"피그마 컴포넌트의 주요 형태와 상태"}</span></div>${PREV[id]?PREV[id]():""}</section>
+        <section class="component-preview component-section"><div class="section-heading"><div><h2 data-toc>Preview</h2></div><span class="section-note">${id==="time-card"?"":"피그마 컴포넌트의 주요 형태와 상태"}</span></div>${PREV[id]?anatInject(id,PREV[id]()):""}</section>
         ${id==="badge"?BADGE_GUIDELINES:""}
         ${usageSection(id)}
         <section class="component-reference component-section"><h2 data-toc>Reference</h2><p class="reference-intro">${id==="time-card"?"실제 컴포넌트 구조, 속성, 모션 기준과 개발 구현 계약을 확인해요.":"구조, 속성, 가이드와 상세 명세를 필요할 때 펼쳐보세요."}</p><div class="reference-content">${body}</div></section></div>`;
@@ -2414,6 +2450,25 @@ const SEC_LINK={home:"overview",usage:"usage",updates:"updates",found:"foundatio
 const route=()=>render((location.hash||"#overview").slice(1));
 window.addEventListener("hashchange",route);
 document.getElementById("menuBtn").addEventListener("click",e=>{const s=document.getElementById("side");const o=s.classList.toggle("open");e.currentTarget.setAttribute("aria-expanded",o?"true":"false");});
+/* Component anatomy figures (callouts) */
+const AL=(t,sub)=>`<em class="al">${t}${sub?`<small>${sub}</small>`:""}</em>`;
+const ANAT={
+  "action-button":()=>`<div class="anat-fig in-stage"><span class="anat-mark al-b"><span class="btn primary lg" style="gap:8px;padding:0 20px"><span class="anat-mark al-l out">${ic("plus",20,2)}${AL("Prefix Icon","optional")}</span><span class="anat-mark al-c hi">Label${AL("Label")}</span><span class="anat-mark al-r out">${ic("right",20,2)}${AL("Suffix Icon","optional")}</span></span>${AL("Container")}</span></div>`,
+  "text-button":()=>`<div class="anat-fig in-stage"><span class="tbtn md" style="gap:12px"><span class="anat-mark al-l out">${ic("plus",20,2)}${AL("Prefix Icon","optional")}</span><span class="anat-mark al-c hi">Label${AL("Label")}</span><span class="anat-mark al-r out">${ic("right",20,2)}${AL("Suffix Icon","optional")}</span></span></div>`,
+  "section-title":()=>`<div class="anat-fig in-stage"><div class="st" style="gap:12px"><div class="r1"><b class="anat-mark al-l">새로 데뷔한 아이돌${AL("Title")}</b><span class="more anat-mark al-r">더보기${ic("right",16)}${AL("Trailing","더보기")}</span></div><small class="anat-mark al-b" style="align-self:flex-start">Caption Text${AL("Caption","optional")}</small></div></div>`,
+  "tabs":()=>`<div class="anat-fig in-stage g"><div class="tabs anat-grp" data-g="Tabs/Group" style="overflow:visible"><div class="on anat-mark al-l">라인업${AL("Tabs/Item")}</div><div>타임테이블</div><div>공지</div></div></div>`,
+  "bottom-navigation":()=>`<div class="anat-fig in-stage g"><div class="bnav anat-grp" data-g="NavigationBar/Group">${[["home","홈",1],["star","아티스트"],["play","콘텐츠"],["cal","캘린더"],["ticket","나의 일정"],["user","마이페이지"]].map(([i,t,on])=>`<div class="${on?"on anat-mark al-l":""}">${ic(i,28,1.7)}${t}${on?AL("NavigationBar/Item","icon 28 + label"):""}</div>`).join("")}</div></div>`,
+  "dropdown":()=>`<div class="anat-fig in-stage v"><div class="anat-col"><div class="tf anat-mark al-v" style="width:260px;justify-content:space-between">지역 선택${ic("down",20)}${AL("Dropdown Selector")}</div><div class="anat-menu anat-mark al-v"><div class="anat-mark al-v">서울${AL("Dropdown Menu Item")}</div><div>부산</div><div>대구</div>${AL("Dropdown Menu")}</div></div></div>`,
+  "dialog":()=>`<div class="anat-fig in-stage v"><div class="anat-col anat-surf"><span class="anat-mark al-v" style="align-self:center;color:var(--az-red,#F04452)">${ic("alert",28)}${AL("StateFeedback","alert=true")}</span><b class="anat-mark al-v anat-t">타이틀을 입력해주세요${AL("Title")}</b><span class="anat-mark al-v anat-d">설명을 입력해주세요${AL("Description")}</span><span class="anat-mark al-v anat-box">${AL("Contents","contents=true")}</span><span class="anat-mark al-v anat-btns">${btn("secondary","md","취소")}${btn("primary","md","확인")}${AL("Buttons")}</span></div></div>`,
+  "cta-module":()=>`<div class="anat-fig in-stage v"><div class="anat-col anat-surf"><span class="anat-mark al-v anat-d" style="font-size:11px;line-height:15px;text-align:left">위 내용을 확인했으며 결제에 동의합니다.${AL("Caption","optional")}</span><span class="anat-mark al-v anat-btns">${btn("secondary","lg","이전")}${btn("primary","lg","결제하기")}${AL("Buttons","Secondary · Primary")}</span></div></div>`
+};
+function anatInject(id,h){
+  if(!ANAT[id]) return h;
+  const tag='<div class="stage-inner az">', k=h.indexOf(tag); if(k<0) return h;
+  const at=k+tag.length;
+  return h.slice(0,at)+`<div class="anat-block"><span class="ab-gl">Anatomy</span>${ANAT[id]()}</div>`+h.slice(at);
+}
+
 /* App Bar anatomy figure */
 PAGES["app-bar"].html=PAGES["app-bar"].html.replace(/<pre><code>\[ Leading[\s\S]*?<\/pre>/,()=>`<div class="anat-fig"><div class="anat-bar"><span class="anat-slot" data-l="Leading">${ic("left",24,2.2)}</span><span class="anat-slot anat-grow" data-l="Content"><span class="anat-tt">Title</span></span><span class="anat-slot" data-l="Trailing"><span class="anat-tr">${ic("search",28)}${ic("bell",28)}</span></span></div></div>`);
 route();
