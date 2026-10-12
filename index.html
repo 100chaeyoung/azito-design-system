@@ -1036,6 +1036,8 @@ img.sh-avs{display:block;width:92px;height:29px;max-width:none;margin:-2px -2px 
 .component-preview .eq-row{gap:0;align-items:flex-start}
 .eq-row>.lbl{width:112px}
 .eq-ic{height:32px;display:grid;place-items:center}
+.component-preview .bdg-colors{flex-wrap:wrap;justify-content:center;max-width:624px;gap:24px 0}
+.bdg-colors>.lbl{width:104px}
 
 .prop-rows{display:flex;flex-direction:column;width:100%}
 .prop-row{display:grid;grid-template-columns:88px minmax(0,1fr);align-items:center;gap:16px;padding:20px 0;border-bottom:1px solid var(--line)}
@@ -1830,7 +1832,7 @@ const PREV = {
   "spinner": () => S("Preview", `<div class="row" style="gap:32px">${L("36px",`<i class="spin dark s36"></i>`)}${L("24px",`<i class="spin dark"></i>`)}${L("on primary",`<span class="btn primary lg" style="width:120px"><i class="spin"></i></span>`)}</div>`),
   "progress-bar": () => S("Preview", `<div class="col" style="gap:20px">${[1,2,3,4].map(n=>L("step "+n,`<div class="pb">${[1,2,3,4].map(i=>`<i class="${i<=n?"on":""}"></i>`).join("")}</div>`)).join("")}</div>`),
   "dimmer": () => S("Preview", `<div class="row">${L("black · 70%",`<div style="width:240px;height:140px;position:relative;border-radius:10px;overflow:hidden;background:#fff"><div style="position:absolute;inset:0;background:rgba(0,0,0,.7)"></div></div>`)}</div>`),
-  "badge": () => S("Preview", `<div class="row">${["bkmint","bkgrad","gmint","mint","green","redsolid","red","blue","gray","graysolid"].map(c=>L(c,`<span class="bdg sm ${c}"><span>${c==="red"||c==="redsolid"?"마감임박":c==="gray"||c==="graysolid"?"종료":c==="blue"?"예정":"NEW"}</span></span>`)).join("")}${L("gray-opacity",`<span class="bdg sm grayop">D-3</span>`)}</div><div class="row" style="align-items:flex-end">${["xs","sm","lg","xl"].map(s=>L(s,`<span class="bdg ${s} bkmint">뱃지</span>`)).join("")}</div>`),
+  "badge": () => S("Color", `<div class="row bdg-colors">${["bkmint","bkgrad","gmint","mint","green","redsolid","red","blue","gray","graysolid"].map(c=>L(c,`<span class="eq-ic"><span class="bdg sm ${c}"><span>${c==="red"||c==="redsolid"?"마감임박":c==="gray"||c==="graysolid"?"종료":c==="blue"?"예정":"NEW"}</span></span></span>`)).join("")}${L("gray-opacity",`<span class="eq-ic"><span class="bdg sm grayop">D-3</span></span>`)}</div>`)+S("Size", `<div class="row" style="align-items:flex-end">${["xs","sm","lg","xl"].map(s=>L(s,`<span class="bdg ${s} bkmint">뱃지</span>`)).join("")}</div>`),
   "avatar": () => {
     const item=(name,file)=>`<div class="avatar-preview-item"><span class="cap">${name}</span><img src="${encodeURI(file)}" alt=""></div>`;
     const types=[["Blank-Gray","Avatar/Variant=Blank-Gray.svg"],["Host","Avatar/Variant=Host.svg"],["Idol","Avatar/Variant=idol.svg"],["Blank-Bk","Avatar/Variant=Blank-Bk.svg"],["Fan meeting","Avatar/Variant=Fan meeting.svg"],["Event","Avatar/Variant=Event.svg"],["Blank-Bk · 2×","Avatar/Variant=Blank-Bk-2x.svg"],["Fan meeting · 2×","Avatar/Variant=Fan meeting-2x.svg"],["Event · 2×","Avatar/Variant=Event-2x.svg"]];
