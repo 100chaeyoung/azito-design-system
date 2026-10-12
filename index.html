@@ -912,8 +912,8 @@ body:not([data-page="foundations"]) .grid{gap:32px 16px}
 .component-preview .cap{font-family:var(--font);font-size:12px;line-height:17px;font-weight:500;color:var(--fg-3)}
 .component-preview .row{column-gap:24px;row-gap:28px}
 .component-preview .avatar-preview-items{display:flex;align-items:flex-start;gap:20px;min-width:max-content}
-.component-preview .avatar-preview-items.avatar-types{display:grid;grid-template-columns:repeat(6,94px) repeat(3,158px);column-gap:0}
-.component-preview .avatar-preview-items.avatar-sizes{display:grid;grid-template-columns:92px 84px 66px 48px 52px;column-gap:24px}
+.component-preview .avatar-preview-items.avatar-types,.component-preview .avatar-preview-items.avatar-sizes{display:flex;align-items:flex-start;gap:32px}
+.component-preview .avatar-preview-items .avatar-preview-item .cap{width:0;overflow:visible}
 .component-preview .avatar-preview-item{display:flex;flex-direction:column;align-items:flex-start;gap:12px;white-space:nowrap}
 .component-preview .avatar-preview-item img{display:block;max-width:none}
 .prop-group{margin-top:56px}
@@ -1918,9 +1918,13 @@ function usageSection(id){
   const kind=byType||!!vr;
   const ranked=(byType?sets.map(k=>[k,sumP(USAGE.per[k])]):vr?Object.entries(vr.by):Object.entries(t).filter(([,c])=>c>0));
   if(id!=="avatar") ranked.sort((a,b)=>b[1]-a[1]);
+  /* Avatar는 Preview와 같은 분류로 보여줘요. 10.11 스캔 기준 Avatar/Type 인스턴스는 전부 Variant=idol이에요. */
+  if(id==="avatar"){const idol=sumP(USAGE.per["Avatar/Type"]||{}),rv=((USAGE.var||{})["ResponsiveAvatar"]||{}).by||{};ranked.length=0;
+    [["Blank-Gray",0],["Host",0],["Idol",idol],["Blank-Bk",0],["Fan meeting",0],["Event",0],["Blank-Bk · 2×",0],["Fan meeting · 2×",0],["Event · 2×",0]].forEach(r=>ranked.push(r));
+    ["xl","lg","md","sm","xs"].forEach(k=>ranked.push(["Responsive · "+k,rv["Property 1="+k]||0]));}
   const LBL=p=>byType?short(p):vr?p:PSHORT(p);
   const OP=[1,.68,.46,.28];
-  const pos=ranked.filter(([,c])=>c>0);
+  const pos=ranked.filter(([,c])=>c>0); if(id==="avatar") pos.sort((a,b)=>b[1]-a[1]);
   const top=id==="badge"?pos:pos.length>5?pos.slice(0,4):pos.slice(0,5), rest=pos.slice(top.length);
   const badgeColors={mint:"#00B585",gmint:"#53A5DA",gray:"#A0A5B1",graysolid:"#7E8695",bkmint:"#1C1E22",bkgrad:"#344F55",green:"#017364",redsolid:"#F04452",red:"#F8A9AF",blue:"#067DFD","gray-opacity":"#636A79","색상 미분류":"#D2D5DA"};
   const segs=top.map(([p,c],i)=>({c,col:id==="badge"?badgeColors[p]:"var(--accent)",op:id==="badge"?1:i<4?OP[i]:.16}));
@@ -1928,8 +1932,8 @@ function usageSection(id){
   const R=80, C=2*Math.PI*R, gap=segs.length>1?(id==="badge"?1.5:5):0;
   let off=0;
   const arcs=!total?`<circle cx="100" cy="100" r="${R}" fill="none" stroke="var(--line-strong)" stroke-opacity=".6" stroke-width="26"/>`:segs.map(g=>{const len=g.c/total*C, d=Math.max(1.5,len-gap), a=`<circle cx="100" cy="100" r="${R}" fill="none" stroke="${g.col}" stroke-opacity="${g.op}" stroke-width="26" stroke-dasharray="${d.toFixed(2)} ${(C-d).toFixed(2)}" stroke-dashoffset="${(-off-gap/2).toFixed(2)}"/>`; off+=len; return a;}).join("");
-  const dot=i=>id==="badge"?`<i style="background:${badgeColors[ranked[i][0]]}"></i>`:i<top.length?`<i style="background:var(--accent);opacity:${i<4?OP[i]:.16}"></i>`:`<i style="background:var(--line-strong)"></i>`;
-  const CAP=id==="badge"?ranked.length:8, shown=ranked.length>CAP?ranked.slice(0,CAP-1):ranked, more=ranked.slice(shown.length);
+  const dot=i=>id==="avatar"?(k=>k>=0?`<i style="background:var(--accent);opacity:${k<4?OP[k]:.16}"></i>`:`<i style="background:var(--line-strong)"></i>`)(top.findIndex(r=>r[0]===ranked[i][0])):id==="badge"?`<i style="background:${badgeColors[ranked[i][0]]}"></i>`:i<top.length?`<i style="background:var(--accent);opacity:${i<4?OP[i]:.16}"></i>`:`<i style="background:var(--line-strong)"></i>`;
+  const CAP=id==="badge"||id==="avatar"?ranked.length:8, shown=ranked.length>CAP?ranked.slice(0,CAP-1):ranked, more=ranked.slice(shown.length);
   const legend=shown.map(([p,c],i)=>`<li title="${p} · ${c}개">${dot(i)}<span class="nm">${LBL(p)}</span><span class="ct">${c.toLocaleString()}<em>개</em></span><span class="pc">${c&&total?(c/total*100).toFixed(c/total<.01?1:0):0}%</span></li>`).join("")+(more.length?`<li><i style="background:var(--line-strong)"></i><span class="nm">그 외 ${more.length}${kind?"종":"곳"}</span><span class="ct">${more.reduce((a,[,c])=>a+c,0).toLocaleString()}<em>개</em></span><span class="pc">${(more.reduce((a,[,c])=>a+c,0)/total*100).toFixed(0)}%</span></li>`:"");
   const DT=`<small class="usage-date">분석 기준 · ${USAGE.scanned.replace(/-/g,".")}</small>`;
   const usageGroup=id==="badge"?"색상별":id==="avatar"?"컴포넌트별":id==="dimmer"?"단일":id==="spinner"?"크기별":id==="dialog"?"속성 조합별":kind?"종류별":"화면별";
