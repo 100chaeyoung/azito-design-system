@@ -1118,6 +1118,8 @@ body .component-doc .usage-card{padding:0;border:0;border-radius:0;background:no
 .component-doc .usage-card .dn-legend li.dn-gh .ct{font-weight:600;color:var(--fg-3)}
 .component-doc .usage-card .dn-legend li.z{color:var(--fg-4,#B0B8C1)}
 .component-doc .usage-card .dn-legend li.z .ct{color:inherit}
+.component-doc .usage-card .dn-legend li.dn-zero{padding:10px 0}
+.component-doc .usage-card .dn-legend li.dn-zero .nm small{display:block;margin-top:2px;font-size:12px;line-height:18px;white-space:normal}
 .dn-legend i{width:10px;height:10px;border-radius:3px}
 .dn-legend .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dn-legend .pc{text-align:right;font-size:13px;color:var(--fg-3);font-variant-numeric:tabular-nums}
@@ -1943,7 +1945,9 @@ function usageSection(id){
   if(id==="avatar"){
     const row=([p,c])=>{const i=ranked.findIndex(r=>r[0]===p);return `<li class="${c?"":"z"}" title="${p} · ${c}개">${dot(i)}<span class="nm">${p}</span><span class="ct">${c.toLocaleString()}<em>개</em></span><span class="pc">${c&&total?(c/total*100).toFixed(c/total<.01?1:0):0}%</span></li>`;};
     const grp=(h,rows)=>`<li class="dn-gh"><span>${h}</span><span class="ct">${rows.reduce((a,[,c])=>a+c,0).toLocaleString()}<em>개</em></span></li>`+rows.map(row).join("");
-    legend=grp("Avatar/Type",ranked.slice(0,9))+grp("ResponsiveAvatar",ranked.slice(9));
+    const used=rs=>rs.filter(([,c])=>c>0).sort((x,y)=>y[1]-x[1]), zero=ranked.filter(([,c])=>!c);
+    legend=grp("Avatar/Type",used(ranked.slice(0,9)))+grp("ResponsiveAvatar",used(ranked.slice(9)))
+      +(zero.length?`<li class="z dn-zero" title="${zero.map(([p])=>p).join(", ")}"><i style="background:var(--line-strong)"></i><span class="nm">미사용 ${zero.length}종<small>${zero.map(([p])=>p).join(", ")}</small></span><span class="ct">0<em>개</em></span><span class="pc">0%</span></li>`:"");
   }
   const DT=`<small class="usage-date">분석 기준 · ${USAGE.scanned.replace(/-/g,".")}</small>`;
   const usageGroup=id==="badge"?"색상별":id==="avatar"?"컴포넌트별":id==="dimmer"?"단일":id==="spinner"?"크기별":id==="dialog"?"속성 조합별":kind?"종류별":"화면별";
