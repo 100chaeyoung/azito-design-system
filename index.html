@@ -588,7 +588,7 @@ body[data-page="foundations"] .thumb{height:180px}
 .elevation-list{display:flex;flex-direction:column;margin:8px 0 48px}
 .elevation-row{display:grid;grid-template-columns:104px minmax(0,1fr);gap:24px;align-items:center;min-height:144px}
 .elevation-preview{width:92px;height:92px;border-radius:12px;background:#fff;display:grid;place-items:center;color:var(--az-n100);font-size:20px;font-weight:700}
-.elevation-copy{display:flex;flex-direction:column;gap:4px}
+.elevation-preview.elv-tile{background:var(--bg-soft,#F3F5F7);border-radius:16px;box-shadow:none;overflow:hidden}.elv-card{display:block;width:52px;height:52px;border-radius:10px;background:#fff}.elv-text{font-style:normal;font-size:30px;line-height:1;font-weight:700;color:#fff;letter-spacing:-.02em}.elv-icon{display:grid;place-items:center;color:#fff}.elv-ticket{display:block;width:56px;height:34px;border-radius:6px;background:#1C1E22}.elevation-copy{display:flex;flex-direction:column;gap:4px}
 .elevation-copy b{font-size:16px;line-height:22px;font-weight:600;color:var(--fg)}
 .elevation-copy span{font-size:13px;line-height:20px;color:var(--fg-3)}
 @media (max-width:640px){
@@ -1335,14 +1335,14 @@ PAGES.color.lead="AZITO의 컬러 팔레트와 시맨틱 컬러입니다. 스와
 PAGES.radius.html=`<div class="radius-spec"><div class="radius-head"><span>명칭</span><span>크기</span><span>미리보기</span></div>${[["3xs",2],["2xs",4],["xs",8],["sm",12],["md",16],["lg",20],["xl",24],["Full",9999]].map(([name,value])=>`<div class="radius-row"><b>${name}</b><b>${value}px</b><i class="radius-preview" style="border-radius:${value}px"></i></div>`).join("")}</div>`;
 PAGES.stroke.html=`<div class="stroke-spec"><div class="radius-head"><span>명칭</span><span>크기</span><span>미리보기</span></div>${[["sm",.5],["md",1],["lg",2]].map(([name,value])=>`<div class="radius-row stroke-row"><b>${name}</b><b>${value}px</b><i class="stroke-preview" style="border-top-width:${value}px"></i></div>`).join("")}</div>`;
 PAGES.elevation.html=`<div class="elevation-list">
-  <div class="elevation-row"><i class="elevation-preview" style="box-shadow:var(--sh-01)"></i><div class="elevation-copy"><b>01</b><span>Multiple Fills</span></div></div>
-  <div class="elevation-row"><i class="elevation-preview" style="box-shadow:var(--sh-02)"></i><div class="elevation-copy"><b>02</b><span>Multiple Fills</span></div></div>
-  <div class="elevation-row"><i class="elevation-preview" style="box-shadow:var(--sh-03)"></i><div class="elevation-copy"><b>03</b><span>Multiple Fills</span></div></div>
-  <div class="elevation-row"><i class="elevation-preview" style="box-shadow:var(--sh-04)"></i><div class="elevation-copy"><b>04</b><span>Multiple Fills</span></div></div>
-  <div class="elevation-row"><i class="elevation-preview" style="box-shadow:var(--sh-05)"></i><div class="elevation-copy"><b>05</b><span>Multiple Fills</span></div></div>
-  <div class="elevation-row"><i class="elevation-preview" style="text-shadow:0 0 4px rgba(28,30,34,.6)">Aa</i><div class="elevation-copy"><b>Shadow/Text</b><span>Drop Shadow · #1C1E22 60% · Blur 4</span></div></div>
-  <div class="elevation-row"><i class="elevation-preview" style="filter:drop-shadow(0 0 2px rgba(0,0,0,.7))">Aa</i><div class="elevation-copy"><b>Shadow/Icon</b><span>Drop Shadow · #000000 70% · Blur 2</span></div></div>
-  <div class="elevation-row"><i class="elevation-preview" style="background:#1C1E22;box-shadow:0 -1px 4px rgba(0,0,0,.1),inset 0 .5px .5px rgba(255,255,255,.4),inset 0 -.5px .5px rgba(0,0,0,.2)"></i><div class="elevation-copy"><b>Shadow/SpecialTicketMini</b><span>Multiple Fills</span></div></div>
+  <div class="elevation-row"><div class="elevation-preview elv-tile"><i class="elv-card" style="box-shadow:var(--sh-01)"></i></div><div class="elevation-copy"><b>01</b><span>Drop Shadow · Y 2 · Blur 4 · 16% (2겹)</span></div></div>
+  <div class="elevation-row"><div class="elevation-preview elv-tile"><i class="elv-card" style="box-shadow:var(--sh-02)"></i></div><div class="elevation-copy"><b>02</b><span>Drop Shadow · Y 4 · Blur 8 · 16% (2겹)</span></div></div>
+  <div class="elevation-row"><div class="elevation-preview elv-tile"><i class="elv-card" style="box-shadow:var(--sh-03)"></i></div><div class="elevation-copy"><b>03</b><span>Drop Shadow · Y 8 · Blur 16 · 16% (3겹)</span></div></div>
+  <div class="elevation-row"><div class="elevation-preview elv-tile"><i class="elv-card" style="box-shadow:var(--sh-04)"></i></div><div class="elevation-copy"><b>04</b><span>Drop Shadow · Y -8 · Blur 24 · 10% (2겹, 위쪽)</span></div></div>
+  <div class="elevation-row"><div class="elevation-preview elv-tile"><i class="elv-card" style="box-shadow:var(--sh-05)"></i></div><div class="elevation-copy"><b>05</b><span>Drop Shadow · Y 20 · Blur 32 · 24% (2겹)</span></div></div>
+  <div class="elevation-row"><div class="elevation-preview elv-tile"><i class="elv-text" style="text-shadow:0 0 4px rgba(28,30,34,.6)">Aa</i></div><div class="elevation-copy"><b>Shadow/Text</b><span>Drop Shadow · #1C1E22 60% · Blur 4</span></div></div>
+  <div class="elevation-row"><div class="elevation-preview elv-tile"><i class="elv-icon" style="filter:drop-shadow(0 0 2px rgba(0,0,0,.7))"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19s-7-4.4-7-9.2A3.8 3.8 0 0 1 12 7.6a3.8 3.8 0 0 1 7 2.2C19 14.6 12 19 12 19z"/></svg></i></div><div class="elevation-copy"><b>Shadow/Icon</b><span>Drop Shadow · #000000 70% · Blur 2</span></div></div>
+  <div class="elevation-row"><div class="elevation-preview elv-tile"><i class="elv-ticket" style="box-shadow:0 -1px 4px rgba(0,0,0,.1),inset 0 .5px .5px rgba(255,255,255,.4),inset 0 -.5px .5px rgba(0,0,0,.2)"></i></div><div class="elevation-copy"><b>Shadow/SpecialTicketMini</b><span>Drop Shadow · Y -1 · Blur 4 · 10% + 안쪽 하이라이트 2겹</span></div></div>
 </div>`;
 
 const NAV = [
