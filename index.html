@@ -539,7 +539,10 @@ body[data-page="foundations"] .thumb{height:180px}
 .bnav div.on{color:#fff}
 .bnav svg{display:block;width:28px;height:28px;flex:none}
 .bn-items{display:flex;flex-direction:column;align-items:center;gap:32px}
-.bn-flat{display:flex;gap:4px;padding:14px 16px 12px;border-radius:12px;background:var(--az-n50,#A0A5B1)}
+.bn-flat{display:flex;gap:4px}
+.component-preview .stage:has(.bn-items){background:#32363E;border-color:#32363E}
+.component-preview .stage:has(.bn-items) .stage-label,.component-preview .stage:has(.bn-items) .cap{color:rgba(255,255,255,.6)}
+.bn-items{align-self:stretch;padding:16px 0 8px}
 .bn-flat>div{width:68px;position:relative;display:flex;flex-direction:column;align-items:center;font-size:10px;font-weight:700;line-height:14px;letter-spacing:0;color:var(--az-white-30)}
 .bn-flat>div.on{color:#fff}
 .bn-beta{position:absolute;left:calc(50% - 3px);top:-2px;padding:2px 3px;border-radius:99px;background:linear-gradient(rgba(0,0,0,.1),rgba(0,0,0,.1)),linear-gradient(136deg,#00E8AA 2%,#53A5DA 88%);color:#fff;font-size:8px;line-height:7px;font-weight:800;font-style:italic;letter-spacing:0}
@@ -1874,7 +1877,7 @@ const PREV = {
   "section-title": () => S("Preview", `<div class="col" style="gap:40px">${L("Subtitle/Default",`<div class="st"><div class="r1"><span class="ht">${ic("down",24,2)}<b>새로 데뷔한 아이돌</b>${ic("down",24,2)}</span><span class="more">더보기${ic("right",16)}</span></div><small>이번 주 새로 등록된 아티스트예요</small></div>`)}${L("Subtitle/Search",`<div class="st search"><div class="r1"><b>새로 데뷔한 아이돌</b><span class="more">더보기${ic("right",16)}</span></div></div>`)}</div>`),
   "bottom-navigation": () => { const grp=(t,b)=>`<div class="ab-g"><span class="ab-gl">${t}</span>${b}</div>`;
     const row=(lab,on)=>L(lab,`<div class="bn-flat">${NAV_ITEMS.map(([k,t,,b])=>navItem(k,t,on,b)).join("")}</div>`);
-    return S("Preview",`<div class="ab-groups">${grp("NavigationBar/Group",`<div class="bnav">${NAV_GROUP.map(([k,t,on])=>navItem(k,t,on)).join("")}</div>`)}${grp("NavigationBar/Item",`<div class="bn-items">${row("Selected=ON",1)}${row("Selected=OFF",0)}</div>`)}</div>`); },
+    return S("Preview",`<div class="ab-groups">${grp("NavigationBar/Group",`<div class="bnav">${NAV_GROUP.map(([k,t,on])=>navItem(k,t,on)).join("")}</div>`)}</div>`)+S("NavigationBar/Item",`<div class="bn-items">${row("Selected=ON",1)}${row("Selected=OFF",0)}</div>`); },
   "os": () => S("Preview", `<div class="col" style="gap:16px">${L("status bar · android",OS_SB)}${L("keyboard",`<div class="os-kb">${"ㅂㅈㄷㄱㅅㅛㅕㅑㅐㅔㅁㄴㅇㄹㅎㅗㅓㅏㅣ".split("").map(k=>`<i>${k}</i>`).join("")}</div>`)}</div>`),
 
   /* foundations */
