@@ -369,7 +369,7 @@ body[data-page="foundations"] .thumb{height:180px}
 .av.img{background:linear-gradient(160deg,#B0FFEA,#067DFD)}
 .dv{background:var(--az-d1)}
 /* ---- Time Card interaction ---- */
-/* --w 하나로 카드 크기를 바꿔요. 비율(9:13)과 모서리는 따라와요 */
+/* 크기: --w로 조절 (비율 9:13, 모서리 자동) */
 .time-card{--w:360px;--rx:0;--ry:0;--x:50;--y:50;--a:0;--g:1;--s:1;--p:1;
   appearance:none;display:block;position:relative;width:min(var(--w),100%);aspect-ratio:9/13;padding:0;border:0;
   background:none;color:inherit;text-align:initial;cursor:pointer;user-select:none;perspective:1600px;
@@ -378,7 +378,7 @@ body[data-page="foundations"] .thumb{height:180px}
 .time-card.is-pressing{--p:.985;--g:.6}
 .time-card:focus-visible{outline:2px solid currentColor;outline-offset:8px;border-radius:8% / 5.54%}
 
-/* 카드 뒤 빛 (aura) — 두 겹이 커서를 따라 서로 반대 방향으로 움직여요 */
+/* aura: 두 겹, 커서 반대 방향으로 이동 */
 .time-card-aura{display:block;position:absolute;inset:0;pointer-events:none;opacity:calc(var(--a)*var(--g));
   transition:opacity 1.4s cubic-bezier(.4,0,.2,1)}
 .time-card.is-hover .time-card-aura{transition:opacity .6s ease}
@@ -391,10 +391,10 @@ body[data-page="foundations"] .thumb{height:180px}
   background:radial-gradient(closest-side,oklch(.87 .18 195/.8) 0%,oklch(.8 .15 225/.4) 45%,transparent 76%);
   translate:calc(-50% + (var(--x) - 50)*-.221%) calc(-50% + (var(--y) - 50)*-.221%);
   animation:time-card-breathe-soft 9s ease-in-out infinite reverse paused}
-/* 보이지 않을 때는 숨쉬기를 멈춰서 자원을 아껴요 */
+/* 화면 밖에서는 breathe 애니메이션 정지 */
 .time-card.is-hover .time-card-glow{animation-play-state:running}
 
-/* 뒤집기 (flip) 와 기울이기 (tilt) 는 층을 나눠야 서로 덮어쓰지 않아요 */
+/* flip / tilt 레이어 분리 (transform 충돌 방지) */
 .time-card-flip,.time-card-tilt{display:block;position:relative;width:100%;height:100%;transform-style:preserve-3d}
 .time-card-flip{transform:rotateY(0);transition:transform .6s cubic-bezier(.4,0,.2,1)}
 .time-card.is-flipped .time-card-flip{transform:rotateY(180deg)}
@@ -408,12 +408,12 @@ body[data-page="foundations"] .thumb{height:180px}
 .time-card-back{transform:rotateY(180deg)}
 .time-card-face img{display:block;width:100%;height:100%;object-fit:cover}
 
-/* 광택 (glare) + 홀로그램 (holo) — 커서 위치를 따라가요 */
+/* glare + holo: 커서 위치 추적 */
 .time-card-glare,.time-card-holo{position:absolute;inset:0;pointer-events:none;transition:opacity 1s ease-out}
 .time-card.is-hover .time-card-glare,.time-card.is-hover .time-card-holo{transition:opacity .4s ease}
 .time-card-glare{opacity:var(--a);mix-blend-mode:soft-light;
   background:radial-gradient(circle at calc(var(--x)*1%) calc(var(--y)*1%),oklch(1 0 0/.5) 0%,oklch(1 0 0/.15) 25%,transparent 55%)}
-/* 뒷면은 좌우가 뒤집혀 보이므로 x 를 반대로 */
+/* 뒷면: x 좌표 반전 */
 .time-card-back .time-card-glare{
   background:radial-gradient(circle at calc((100 - var(--x))*1%) calc(var(--y)*1%),oklch(1 0 0/.5) 0%,oklch(1 0 0/.15) 25%,transparent 55%)}
 .time-card-holo{opacity:calc(var(--a)*.85);mix-blend-mode:overlay;
@@ -422,7 +422,7 @@ body[data-page="foundations"] .thumb{height:180px}
 @keyframes time-card-breathe{0%,to{opacity:.85;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
 @keyframes time-card-breathe-soft{0%,to{opacity:.81;transform:scale(1)}50%{opacity:.95;transform:scale(1.08)}}
 
-/* 동작 줄이기: 위치 이동은 끄고 빛의 나타남/사라짐만 유지해요 */
+/* reduced motion: 이동은 끄고 opacity만 유지 */
 @media (prefers-reduced-motion:reduce){
   .time-card.is-pressing{--p:1}
   .time-card-flip,.time-card-tilt{transition:none}
@@ -1476,7 +1476,7 @@ const tcx = () => `<button type="button" class="time-card"
     </span>
   </span>
 </button>`;
-const TCX_CODE = {"html": "<div class=\"time-card\" role=\"button\" tabindex=\"0\"\n     aria-label=\"타임카드 뒤집기\" aria-pressed=\"false\">\n  <div class=\"time-card-aura\" aria-hidden=\"true\">\n    <span class=\"time-card-glow\"><\/span>\n    <span class=\"time-card-glow\"><\/span>\n  <\/div>\n  <div class=\"time-card-flip\">\n    <div class=\"time-card-tilt\">\n      <div class=\"time-card-face\">\n        <img src=\"front.png\" alt=\"\" draggable=\"false\">\n        <span class=\"time-card-glare\"><\/span>\n        <span class=\"time-card-holo\"><\/span>\n      <\/div>\n      <div class=\"time-card-face time-card-back\">\n        <img src=\"back.png\" alt=\"\" draggable=\"false\">\n        <span class=\"time-card-glare\"><\/span>\n        <span class=\"time-card-holo\"><\/span>\n      <\/div>\n    <\/div>\n  <\/div>\n<\/div>", "css": "/* --w 하나로 카드 크기를 바꿔요. 비율(9:13)과 모서리는 따라와요 */\n.time-card{--w:360px;--rx:0;--ry:0;--x:50;--y:50;--a:0;--s:1;\n  position:relative;width:var(--w);aspect-ratio:9/13;cursor:pointer;user-select:none;perspective:1600px}\n.time-card.is-flipped{--s:-1}\n.time-card:focus-visible{outline:2px solid currentColor;outline-offset:8px;border-radius:calc(var(--w)*.09)}\n\n/* 카드 뒤 빛 (aura) — 두 겹이 커서를 따라 서로 반대 방향으로 움직여요 */\n.time-card-aura{position:absolute;inset:0;pointer-events:none;opacity:var(--a);\n  transition:opacity 1.4s cubic-bezier(.4,0,.2,1)}\n.time-card.is-hover .time-card-aura{transition:opacity .6s ease}\n.time-card-glow{position:absolute;left:50%;top:50%;width:1000px;height:1000px;border-radius:50%;filter:blur(90px);\n  background:radial-gradient(closest-side,oklch(.88 .2 320/.9) 0%,oklch(.8 .18 280/.55) 35%,oklch(.72 .16 230/.25) 58%,transparent 78%);\n  translate:calc(-50% + (var(--x) - 50)*1.6px) calc(-50% + (var(--y) - 50)*1.6px);\n  transition:translate .5s cubic-bezier(.22,1,.36,1);\n  animation:time-card-breathe 7s ease-in-out infinite paused}\n.time-card-glow+.time-card-glow{width:860px;height:860px;filter:blur(100px);\n  background:radial-gradient(closest-side,oklch(.87 .18 195/.8) 0%,oklch(.8 .15 225/.4) 45%,transparent 76%);\n  translate:calc(-50% + (var(--x) - 50)*-1.9px) calc(-50% + (var(--y) - 50)*-1.9px);\n  animation:time-card-breathe-soft 9s ease-in-out infinite reverse paused}\n/* 보이지 않을 때는 숨쉬기를 멈춰서 자원을 아껴요 */\n.time-card.is-hover .time-card-glow{animation-play-state:running}\n\n/* 뒤집기 (flip) 와 기울이기 (tilt) 는 층을 나눠야 서로 덮어쓰지 않아요 */\n.time-card-flip,.time-card-tilt{position:relative;width:100%;height:100%;transform-style:preserve-3d}\n.time-card-tilt{transform:rotateX(calc(var(--rx)*var(--s)*1deg)) rotateY(calc(var(--ry)*1deg));\n  transition:transform .7s cubic-bezier(.22,1,.36,1)}\n.time-card.is-moved .time-card-tilt{transition:transform .12s ease-out}\n.time-card-flip.to-back{animation:time-card-flip-back 1.4s linear forwards}\n.time-card-flip.to-front{animation:time-card-flip-front 1.4s linear forwards}\n\n.time-card-face{position:absolute;inset:0;border-radius:calc(var(--w)*.078);overflow:hidden;\n  backface-visibility:hidden;-webkit-backface-visibility:hidden;background:#000;\n  box-shadow:0 30px 60px -15px oklch(0 0 0/.7),0 10px 25px -5px oklch(0 0 0/.5)}\n.time-card-back{transform:rotateY(180deg)}\n.time-card-face img{display:block;width:100%;height:100%;object-fit:cover}\n\n/* 광택 (glare) + 홀로그램 (holo) — 커서 위치를 따라가요 */\n.time-card-glare,.time-card-holo{position:absolute;inset:0;pointer-events:none;transition:opacity 1s ease-out}\n.time-card.is-hover .time-card-glare,.time-card.is-hover .time-card-holo{transition:opacity .4s ease}\n.time-card-glare{opacity:var(--a);mix-blend-mode:soft-light;\n  background:radial-gradient(circle at calc(var(--x)*1%) calc(var(--y)*1%),oklch(1 0 0/.5) 0%,oklch(1 0 0/.15) 25%,transparent 55%)}\n/* 뒷면은 좌우가 뒤집혀 보이므로 x 를 반대로 */\n.time-card-back .time-card-glare{\n  background:radial-gradient(circle at calc((100 - var(--x))*1%) calc(var(--y)*1%),oklch(1 0 0/.5) 0%,oklch(1 0 0/.15) 25%,transparent 55%)}\n.time-card-holo{opacity:calc(var(--a)*.85);mix-blend-mode:overlay;\n  background:linear-gradient(calc((100 + var(--x))*1deg),transparent 35%,oklch(.95 .15 320/.4) 48%,oklch(.95 .15 200/.4) 55%,transparent 70%)}\n\n@keyframes time-card-breathe{0%,to{opacity:.85;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}\n@keyframes time-card-breathe-soft{0%,to{opacity:.81;transform:scale(1)}50%{opacity:.95;transform:scale(1.08)}}\n@keyframes time-card-flip-back{\n  0%{transform:rotateY(0) scale(1);animation-timing-function:cubic-bezier(.3,0,.4,1)}\n  14%{transform:rotateY(-18deg) scale(.98);animation-timing-function:cubic-bezier(.55,0,.25,1)}\n  74%{transform:rotateY(192deg) scale(1.03);animation-timing-function:cubic-bezier(.4,0,.4,1)}\n  88%{transform:rotateY(175deg) scale(1.008);animation-timing-function:cubic-bezier(.4,0,.4,1)}\n  to{transform:rotateY(180deg) scale(1)}}\n@keyframes time-card-flip-front{\n  0%{transform:rotateY(180deg) scale(1);animation-timing-function:cubic-bezier(.3,0,.4,1)}\n  14%{transform:rotateY(198deg) scale(.98);animation-timing-function:cubic-bezier(.55,0,.25,1)}\n  74%{transform:rotateY(-12deg) scale(1.03);animation-timing-function:cubic-bezier(.4,0,.4,1)}\n  88%{transform:rotateY(5deg) scale(1.008);animation-timing-function:cubic-bezier(.4,0,.4,1)}\n  to{transform:rotateY(0) scale(1)}}\n\n/* 동작 줄이기: 뒤집기는 바로 넘기고 숨쉬기는 꺼요 (기울임은 JS 에서 꺼요) */\n@media (prefers-reduced-motion:reduce){\n  .time-card-flip.to-back,.time-card-flip.to-front{animation-duration:.01s}\n  .time-card-glow{animation:none}}", "js": "{ // 블록으로 감싸서 페이지의 다른 변수와 이름이 겹치지 않게 해요\n  const TILT = 14; // 최대 기울기(도)\n  const reduce = matchMedia(\"(prefers-reduced-motion: reduce)\");\n  const find = e => e.target.closest && e.target.closest(\".time-card\");\n  const set = (el, vars) => { for (const k in vars) el.style.setProperty(k, vars[k]); };\n\n  // 기울이기 + 광택: 카드 안에서의 커서 위치(0~1)를 CSS 변수로 넘겨요\n  document.addEventListener(\"mousemove\", e => {\n    const el = find(e); if (!el) return;\n    const r = el.getBoundingClientRect();\n    const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;\n    const t = reduce.matches ? 0 : TILT * 2;\n    el.classList.add(\"is-moved\", \"is-hover\");\n    set(el, { \"--rx\": (0.5 - y) * t, \"--ry\": (x - 0.5) * t, \"--x\": x * 100, \"--y\": y * 100, \"--a\": 1 });\n  });\n\n  // 카드 밖으로 나가면 원위치\n  document.addEventListener(\"mouseout\", e => {\n    const el = find(e); if (!el || el.contains(e.relatedTarget)) return;\n    el.classList.remove(\"is-hover\");\n    set(el, { \"--rx\": 0, \"--ry\": 0, \"--a\": 0 });\n  });\n\n  // 뒤집기\n  const flip = el => {\n    const layer = el.querySelector(\".time-card-flip\");\n    if (layer.dataset.busy) return; // 뒤집히는 중에는 무시 (중간에 다시 누르면 튀어요)\n    const back = el.classList.toggle(\"is-flipped\");\n    el.setAttribute(\"aria-pressed\", back);\n    layer.dataset.busy = \"1\";\n    layer.classList.toggle(\"to-back\", back);\n    layer.classList.toggle(\"to-front\", !back);\n  };\n  const done = e => { if (e.target.classList && e.target.classList.contains(\"time-card-flip\")) delete e.target.dataset.busy; };\n  document.addEventListener(\"animationend\", done);\n  document.addEventListener(\"animationcancel\", done);\n\n  document.addEventListener(\"click\", e => { const el = find(e); if (el) flip(el); });\n  document.addEventListener(\"keydown\", e => {\n    const el = find(e);\n    if (!el || e.repeat || (e.key !== \"Enter\" && e.key !== \" \")) return;\n    e.preventDefault(); // Space 로 페이지가 스크롤되지 않게\n    flip(el);\n  });\n}"};
+const TCX_CODE = {"html": "<div class=\"time-card\" role=\"button\" tabindex=\"0\"\n     aria-label=\"타임카드 뒤집기\" aria-pressed=\"false\">\n  <div class=\"time-card-aura\" aria-hidden=\"true\">\n    <span class=\"time-card-glow\"><\/span>\n    <span class=\"time-card-glow\"><\/span>\n  <\/div>\n  <div class=\"time-card-flip\">\n    <div class=\"time-card-tilt\">\n      <div class=\"time-card-face\">\n        <img src=\"front.png\" alt=\"\" draggable=\"false\">\n        <span class=\"time-card-glare\"><\/span>\n        <span class=\"time-card-holo\"><\/span>\n      <\/div>\n      <div class=\"time-card-face time-card-back\">\n        <img src=\"back.png\" alt=\"\" draggable=\"false\">\n        <span class=\"time-card-glare\"><\/span>\n        <span class=\"time-card-holo\"><\/span>\n      <\/div>\n    <\/div>\n  <\/div>\n<\/div>", "css": "/* 크기: --w로 조절 (비율 9:13, 모서리 자동) */\n.time-card{--w:360px;--rx:0;--ry:0;--x:50;--y:50;--a:0;--s:1;\n  position:relative;width:var(--w);aspect-ratio:9/13;cursor:pointer;user-select:none;perspective:1600px}\n.time-card.is-flipped{--s:-1}\n.time-card:focus-visible{outline:2px solid currentColor;outline-offset:8px;border-radius:calc(var(--w)*.09)}\n\n/* aura: 두 겹, 커서 반대 방향으로 이동 */\n.time-card-aura{position:absolute;inset:0;pointer-events:none;opacity:var(--a);\n  transition:opacity 1.4s cubic-bezier(.4,0,.2,1)}\n.time-card.is-hover .time-card-aura{transition:opacity .6s ease}\n.time-card-glow{position:absolute;left:50%;top:50%;width:1000px;height:1000px;border-radius:50%;filter:blur(90px);\n  background:radial-gradient(closest-side,oklch(.88 .2 320/.9) 0%,oklch(.8 .18 280/.55) 35%,oklch(.72 .16 230/.25) 58%,transparent 78%);\n  translate:calc(-50% + (var(--x) - 50)*1.6px) calc(-50% + (var(--y) - 50)*1.6px);\n  transition:translate .5s cubic-bezier(.22,1,.36,1);\n  animation:time-card-breathe 7s ease-in-out infinite paused}\n.time-card-glow+.time-card-glow{width:860px;height:860px;filter:blur(100px);\n  background:radial-gradient(closest-side,oklch(.87 .18 195/.8) 0%,oklch(.8 .15 225/.4) 45%,transparent 76%);\n  translate:calc(-50% + (var(--x) - 50)*-1.9px) calc(-50% + (var(--y) - 50)*-1.9px);\n  animation:time-card-breathe-soft 9s ease-in-out infinite reverse paused}\n/* 화면 밖에서는 breathe 애니메이션 정지 */\n.time-card.is-hover .time-card-glow{animation-play-state:running}\n\n/* flip / tilt 레이어 분리 (transform 충돌 방지) */\n.time-card-flip,.time-card-tilt{position:relative;width:100%;height:100%;transform-style:preserve-3d}\n.time-card-tilt{transform:rotateX(calc(var(--rx)*var(--s)*1deg)) rotateY(calc(var(--ry)*1deg));\n  transition:transform .7s cubic-bezier(.22,1,.36,1)}\n.time-card.is-moved .time-card-tilt{transition:transform .12s ease-out}\n.time-card-flip.to-back{animation:time-card-flip-back 1.4s linear forwards}\n.time-card-flip.to-front{animation:time-card-flip-front 1.4s linear forwards}\n\n.time-card-face{position:absolute;inset:0;border-radius:calc(var(--w)*.078);overflow:hidden;\n  backface-visibility:hidden;-webkit-backface-visibility:hidden;background:#000;\n  box-shadow:0 30px 60px -15px oklch(0 0 0/.7),0 10px 25px -5px oklch(0 0 0/.5)}\n.time-card-back{transform:rotateY(180deg)}\n.time-card-face img{display:block;width:100%;height:100%;object-fit:cover}\n\n/* glare + holo: 커서 위치 추적 */\n.time-card-glare,.time-card-holo{position:absolute;inset:0;pointer-events:none;transition:opacity 1s ease-out}\n.time-card.is-hover .time-card-glare,.time-card.is-hover .time-card-holo{transition:opacity .4s ease}\n.time-card-glare{opacity:var(--a);mix-blend-mode:soft-light;\n  background:radial-gradient(circle at calc(var(--x)*1%) calc(var(--y)*1%),oklch(1 0 0/.5) 0%,oklch(1 0 0/.15) 25%,transparent 55%)}\n/* 뒷면: x 좌표 반전 */\n.time-card-back .time-card-glare{\n  background:radial-gradient(circle at calc((100 - var(--x))*1%) calc(var(--y)*1%),oklch(1 0 0/.5) 0%,oklch(1 0 0/.15) 25%,transparent 55%)}\n.time-card-holo{opacity:calc(var(--a)*.85);mix-blend-mode:overlay;\n  background:linear-gradient(calc((100 + var(--x))*1deg),transparent 35%,oklch(.95 .15 320/.4) 48%,oklch(.95 .15 200/.4) 55%,transparent 70%)}\n\n@keyframes time-card-breathe{0%,to{opacity:.85;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}\n@keyframes time-card-breathe-soft{0%,to{opacity:.81;transform:scale(1)}50%{opacity:.95;transform:scale(1.08)}}\n@keyframes time-card-flip-back{\n  0%{transform:rotateY(0) scale(1);animation-timing-function:cubic-bezier(.3,0,.4,1)}\n  14%{transform:rotateY(-18deg) scale(.98);animation-timing-function:cubic-bezier(.55,0,.25,1)}\n  74%{transform:rotateY(192deg) scale(1.03);animation-timing-function:cubic-bezier(.4,0,.4,1)}\n  88%{transform:rotateY(175deg) scale(1.008);animation-timing-function:cubic-bezier(.4,0,.4,1)}\n  to{transform:rotateY(180deg) scale(1)}}\n@keyframes time-card-flip-front{\n  0%{transform:rotateY(180deg) scale(1);animation-timing-function:cubic-bezier(.3,0,.4,1)}\n  14%{transform:rotateY(198deg) scale(.98);animation-timing-function:cubic-bezier(.55,0,.25,1)}\n  74%{transform:rotateY(-12deg) scale(1.03);animation-timing-function:cubic-bezier(.4,0,.4,1)}\n  88%{transform:rotateY(5deg) scale(1.008);animation-timing-function:cubic-bezier(.4,0,.4,1)}\n  to{transform:rotateY(0) scale(1)}}\n\n/* 동작 줄이기: 뒤집기는 바로 넘기고 숨쉬기는 꺼요 (기울임은 JS 에서 꺼요) */\n@media (prefers-reduced-motion:reduce){\n  .time-card-flip.to-back,.time-card-flip.to-front{animation-duration:.01s}\n  .time-card-glow{animation:none}}", "js": "{ // 블록 스코프 (전역 변수 충돌 방지)\n  const TILT = 14; // 최대 기울기 (deg)\n  const reduce = matchMedia(\"(prefers-reduced-motion: reduce)\");\n  const find = e => e.target.closest && e.target.closest(\".time-card\");\n  const set = (el, vars) => { for (const k in vars) el.style.setProperty(k, vars[k]); };\n\n  // 기울이기 + 광택: 카드 안에서의 커서 위치(0~1)를 CSS 변수로 넘겨요\n  document.addEventListener(\"mousemove\", e => {\n    const el = find(e); if (!el) return;\n    const r = el.getBoundingClientRect();\n    const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;\n    const t = reduce.matches ? 0 : TILT * 2;\n    el.classList.add(\"is-moved\", \"is-hover\");\n    set(el, { \"--rx\": (0.5 - y) * t, \"--ry\": (x - 0.5) * t, \"--x\": x * 100, \"--y\": y * 100, \"--a\": 1 });\n  });\n\n  // 카드 밖으로 나가면 원위치\n  document.addEventListener(\"mouseout\", e => {\n    const el = find(e); if (!el || el.contains(e.relatedTarget)) return;\n    el.classList.remove(\"is-hover\");\n    set(el, { \"--rx\": 0, \"--ry\": 0, \"--a\": 0 });\n  });\n\n  // 뒤집기\n  const flip = el => {\n    const layer = el.querySelector(\".time-card-flip\");\n    if (layer.dataset.busy) return; // 뒤집히는 중에는 무시 (중간에 다시 누르면 튀어요)\n    const back = el.classList.toggle(\"is-flipped\");\n    el.setAttribute(\"aria-pressed\", back);\n    layer.dataset.busy = \"1\";\n    layer.classList.toggle(\"to-back\", back);\n    layer.classList.toggle(\"to-front\", !back);\n  };\n  const done = e => { if (e.target.classList && e.target.classList.contains(\"time-card-flip\")) delete e.target.dataset.busy; };\n  document.addEventListener(\"animationend\", done);\n  document.addEventListener(\"animationcancel\", done);\n\n  document.addEventListener(\"click\", e => { const el = find(e); if (el) flip(el); });\n  document.addEventListener(\"keydown\", e => {\n    const el = find(e);\n    if (!el || e.repeat || (e.key !== \"Enter\" && e.key !== \" \")) return;\n    e.preventDefault(); // Space 로 페이지가 스크롤되지 않게\n    flip(el);\n  });\n}"};
 /* 복사 예제가 실제 데모 구현과 어긋나지 않도록 같은 CSS 블록을 사용해요. */
 TCX_CODE.html = `<button type="button" class="time-card"
      aria-label="타임카드 앞뒷면 전환" aria-pressed="false">
@@ -1503,14 +1503,14 @@ TCX_CODE.html = `<button type="button" class="time-card"
   const styleSource = [...document.querySelectorAll("style")]
     .map(style => style.textContent)
     .find(css => css.includes("/* ---- Time Card interaction ---- */"));
-  const start = styleSource ? styleSource.indexOf("/* --w 하나로") : -1;
+  const start = styleSource ? styleSource.indexOf("/* 크기: --w") : -1;
   const end = styleSource ? styleSource.indexOf("/* stage for the interactive card */", start) : -1;
   if (start >= 0 && end > start) TCX_CODE.css = styleSource.slice(start, end).trim();
 }
-TCX_CODE.js = `{ // 블록으로 감싸서 페이지의 다른 변수와 이름이 겹치지 않게 해요
-  const TILT = 14; // 최대 기울기(도)
-  const TAP_MAX = 250; // 이 시간보다 짧게 누르면 카드 뒤집기
-  const TAP_SLOP = 6; // 탭과 드래그를 구분하는 이동 거리(px)
+TCX_CODE.js = `{ // 블록 스코프 (전역 변수 충돌 방지)
+  const TILT = 14; // 최대 기울기 (deg)
+  const TAP_MAX = 250; // 탭 판정 시간 (ms)
+  const TAP_SLOP = 6; // 탭/드래그 구분 거리 (px)
   const reduce = matchMedia("(prefers-reduced-motion: reduce)");
   const finePointer = matchMedia("(hover: hover) and (pointer: fine)");
   const find = e => e.target.closest && e.target.closest(".time-card");
@@ -1547,7 +1547,7 @@ TCX_CODE.js = `{ // 블록으로 감싸서 페이지의 다른 변수와 이름�
     set(el, { "--rx": 0, "--ry": 0, "--x": 50, "--y": 50, "--a": 0 });
   };
 
-  // 데스크톱: 마우스를 따라 기울여요
+  // desktop: 마우스 따라 tilt
   document.addEventListener("pointermove", e => {
     if (!finePointer.matches || e.pointerType === "touch") return;
     const el = find(e); if (el) queuePointer(el, e.clientX, e.clientY);
@@ -1560,7 +1560,7 @@ TCX_CODE.js = `{ // 블록으로 감싸서 페이지의 다른 변수와 이름�
     reset(el);
   });
 
-  // 모바일: 손가락이 닿는 즉시 홀로그램을 켜요
+  // mobile: 터치 즉시 holo 활성화
   document.addEventListener("pointerdown", e => {
     if (e.pointerType !== "touch" || !e.isPrimary) return;
     const el = find(e); if (!el) return;
@@ -2389,10 +2389,10 @@ route();
 </script>
 <script>
 /* Time Card interaction (tilt · flip) */
-{ // 블록으로 감싸서 페이지의 다른 변수와 이름이 겹치지 않게 해요
-  const TILT = 14; // 최대 기울기(도)
-  const TAP_MAX = 250; // 이 시간보다 짧게 누르면 카드 뒤집기
-  const TAP_SLOP = 6; // 탭과 드래그를 구분하는 이동 거리(px)
+{ // 블록 스코프 (전역 변수 충돌 방지)
+  const TILT = 14; // 최대 기울기 (deg)
+  const TAP_MAX = 250; // 탭 판정 시간 (ms)
+  const TAP_SLOP = 6; // 탭/드래그 구분 거리 (px)
   const reduce = matchMedia("(prefers-reduced-motion: reduce)");
   const finePointer = matchMedia("(hover: hover) and (pointer: fine)");
   const find = e => e.target.closest && e.target.closest(".time-card");
