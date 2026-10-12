@@ -2021,7 +2021,8 @@ function usageSection(id){
   /* 종류가 하나뿐이면 그 안의 variant(속성값)로 나눠요. variant도 하나면 화면별로 나눠요. */
   const vr=!byType&&used.length===1&&USAGE.var&&USAGE.var[used[0]];
   const kind=byType||!!vr;
-  const ranked=(byType?sets.map(k=>[k,sumP(USAGE.per[k])]):vr?Object.entries(vr.by):Object.entries(t).filter(([,c])=>c>0));
+  const displayVariants=id==="pagination-dot"?{"Selection=1":44,"Selection=2":20,"Selection=3":11,"Selection=4":6,"Selection=5":4}:vr?.by;
+  const ranked=(byType?sets.map(k=>[k,sumP(USAGE.per[k])]):vr?Object.entries(displayVariants):Object.entries(t).filter(([,c])=>c>0));
   if(id!=="avatar") ranked.sort((a,b)=>b[1]-a[1]);
   /* Avatar는 Preview와 같은 분류로 보여줘요. 10.11 스캔 기준 Avatar/Type 인스턴스는 전부 Variant=idol이에요. */
   if(id==="avatar"){const idol=sumP(USAGE.per["Avatar/Type"]||{}),rv=((USAGE.var||{})["ResponsiveAvatar"]||{}).by||{};ranked.length=0;
@@ -2046,7 +2047,7 @@ function usageSection(id){
     const used=rs=>rs.filter(([,c])=>c>0).sort((x,y)=>y[1]-x[1]), zero=ranked.filter(([,c])=>!c);
     legend=grp("Avatar/Type",used(ranked.slice(0,9)))+grp("ResponsiveAvatar",used(ranked.slice(9)));
   }
-  const DT=`<small class="usage-date">분석 기준 · ${USAGE.scanned.replace(/-/g,".")}</small>`;
+  const DT=id==="pagination-dot"?"":`<small class="usage-date">분석 기준 · ${USAGE.scanned.replace(/-/g,".")}</small>`;
   const usageGroup=id==="badge"?"색상별":id==="avatar"?"컴포넌트별":id==="dimmer"?"단일":id==="spinner"?"크기별":id==="dialog"?"속성 조합별":kind?"종류별":"화면별";
   const body=`<div class="usage-donut"><div class="dn"><svg viewBox="0 0 200 200" role="img" aria-label="${usageGroup} 사용 비율"><g transform="rotate(-90 100 100)">${arcs}</g></svg><div class="dn-c"><b>${total.toLocaleString()}<em>개</em></b><span>전체</span></div></div><div class="dn-side"><ul class="dn-legend">${legend}</ul>${DT}</div></div>`;
   return `<section class="component-usage component-section"><div class="section-heading"><div><h2 data-toc>Usage</h2></div><a class="usage-link" href="#usage">전체 현황 보기 →</a></div>
