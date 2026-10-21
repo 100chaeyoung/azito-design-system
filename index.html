@@ -2071,14 +2071,14 @@ function usageSection(id){
   /* OS usage legend:begin */
   if(id==="os"){
     const count=key=>sumP(USAGE.per[key]||{});
-    const row=(key,label,section=false)=>{
+    const row=(key,label)=>{
       const c=count(key),i=ranked.findIndex(([name])=>name===key);
-      return `<li${section?' style="margin-top:24px"':""} title="${label} · ${c}개">${dot(i)}<span class="nm">${label}</span><span class="ct">${c.toLocaleString()}<em>개</em></span><span class="pc">${total?(c/total*100).toFixed(0):0}%</span></li>`;
+      return `<li title="${label} · ${c}개">${dot(i)}<span class="nm">${label}</span><span class="ct">${c.toLocaleString()}<em>개</em></span><span class="pc">${total?(c/total*100).toFixed(0):0}%</span></li>`;
     };
     legend=`<li class="dn-gh"><span>네비게이션</span><span class="ct">${(count("OS/Bar/Top Navigation")+count("OS/Bar/Bottom Navigation")).toLocaleString()}<em>개</em></span></li>`
       +row("OS/Bar/Top Navigation","Top Navigation")
       +row("OS/Bar/Bottom Navigation","Bottom Navigation")
-      +row("Keyboard","키보드",true);
+      +row("Keyboard","키보드");
   }
   /* OS usage legend:end */
   const usageGroup=id==="badge"?"색상별":id==="avatar"?"컴포넌트별":id==="dimmer"?"단일":id==="spinner"?"크기별":id==="dialog"?"속성 조합별":kind?"종류별":"화면별";
