@@ -5,12 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="AZITO 디자인 시스템 문서 — 파운데이션, 컴포넌트, 변경 이력, 사용 현황">
 <style>html,body{margin:0}img{max-width:100%}
-.os-preview{display:grid;grid-template-columns:repeat(2,minmax(0,375px));gap:32px;width:100%;justify-content:center;align-items:start}
-.os-platform{display:flex;flex-direction:column;gap:24px;min-width:0}
-.os-platform h3{margin:0;text-align:center;font-size:16px}
-.os-platform .lbl{width:100%}
-.os-asset{display:block;max-width:100%;height:auto}
-@media(max-width:1100px){.os-preview{grid-template-columns:minmax(0,375px)}}
+.component-preview .stage-inner:has(.os-preview){width:100%;min-width:0;align-items:center}
+.os-preview{display:flex;flex-direction:column;align-items:center;gap:40px;width:100%;min-width:0}
+.os-section{display:flex;flex-direction:column;align-items:center;gap:24px;width:100%;min-width:0}
+.os-section h3{margin:0;text-align:center;font-size:18px}
+.os-section+.os-section{border-top:1px solid var(--line);padding-top:32px}
+.os-group{display:flex;flex-direction:column;align-items:center;gap:20px;width:100%}
+.os-group h4{margin:0;font-size:13px;font-weight:500;color:var(--text-secondary)}
+.os-asset{display:block;width:auto;max-width:100%;height:auto;margin-inline:auto}
+.os-preview .lbl{width:100%;align-items:center}
 </style>
 <title>AZITO Design System</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1749,7 +1752,7 @@ const PREV = {
   "tabs": () => S("Preview", `<div class="col" style="gap:16px">${L("count 3",`<div class="tabs"><div class="on">라인업</div><div>타임테이블</div><div>공지</div></div>`)}${L("count 2",`<div class="tabs"><div>예정</div><div class="on">지난 공연</div></div>`)}</div>`),
   "section-title": () => S("Preview", `<div class="col">${L("default",`<div class="st"><div class="r1"><b>새로 데뷔한 아이돌</b><span class="more">더보기${ic("right",16)}</span></div><small>이번 주 새로 등록된 아티스트예요</small></div>`)}</div>`),
   "bottom-navigation": () => S("Preview", `<div class="bnav">${[["home","홈",1],["star","아티스트"],["play","콘텐츠"],["cal","캘린더"],["ticket","나의 일정"],["user","마이페이지"]].map(([i,t,on])=>`<div class="${on?"on":""}">${ic(i,28,1.7)}${t}</div>`).join("")}</div>`),
-  "os": () => S("Preview", `<div class="os-preview">${[["Android","statusAndroid","navigationAndroid","keyboardAndroid"],["iOS","statusIOS","homeIOS","keyboardIOS"]].map(([platform,status,bottom,keyboard])=>`<div class="os-platform"><h3>${platform}</h3>${L("Status Bar",osImage(status,`${platform} Status Bar`))}${L(platform==="iOS"?"Home Bar":"Navigation Bar",osImage(bottom,`${platform} ${platform==="iOS"?"Home Bar":"Navigation Bar"}`))}${L("Keyboard",osImage(keyboard,`${platform} Keyboard`))}</div>`).join("")}</div>`),
+  "os": () => S("Preview", `<div class="os-preview"><section class="os-section"><h3>네비게이션</h3><div class="os-group"><h4>Top Navigation</h4>${osImage("statusIOS","iOS Top Navigation")}${osImage("statusAndroid","Android Top Navigation")}</div><div class="os-group"><h4>Bottom Navigation</h4>${osImage("homeIOS","iOS Home Bar")}${osImage("navigationAndroid","Android Bottom Navigation")}</div></section><section class="os-section"><h3>키보드</h3><div class="os-group">${osImage("keyboardIOS","iOS Keyboard")}${osImage("keyboardAndroid","Android Keyboard")}</div></section></div>`),
 
   /* foundations */
   "color": () => {
