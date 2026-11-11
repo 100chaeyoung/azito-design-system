@@ -1360,7 +1360,7 @@ body .usg-rank .usage-bar .ct{flex:none;text-align:left;font-variant-numeric:tab
 
 </style>
 <style id="motion-css">
-.mo-tabs{margin:8px 0 8px}
+.mo-tabs{position:sticky;top:var(--mo-tabs-top,64px);z-index:30;background:var(--bg);margin:8px 0 8px}
 
 .mo-recs{position:relative;overflow:hidden;isolation:isolate;display:inline-flex;align-items:center;justify-content:center;gap:4px;box-sizing:border-box;padding:7px 12px;border:0;border-radius:6px;background:#F3F5F7;color:#32363E;font-family:var(--font);font-size:14px;line-height:19px;font-weight:700;letter-spacing:-0.28px;cursor:pointer;-webkit-font-smoothing:antialiased;transition:transform .15s}
 .mo-recs:active{transform:scale(.96)}
@@ -2573,7 +2573,8 @@ let colorTip;
 function initMotionTabs(root){
   const tabs=[...root.querySelectorAll("[data-mo-tab]")];
   if(!tabs.length) return;
-  tabs.forEach(tab=>tab.addEventListener("click",()=>{selectMotionTab(root,tab.dataset.moTab);buildToc(root);}));
+  tabs.forEach(tab=>tab.addEventListener("click",()=>{selectMotionTab(root,tab.dataset.moTab);buildToc(root);const bar=root.querySelector('.mo-tabs');const y=bar.getBoundingClientRect().top+scrollY-(parseFloat(getComputedStyle(bar).top)||0);if(scrollY>y)scrollTo({top:y});}));
+  const setTop=()=>{const t=document.querySelector('.top');root.style.setProperty('--mo-tabs-top',(t&&getComputedStyle(t).display!=='none'?t.offsetHeight:0)+'px');};setTop();addEventListener('resize',setTop);
 }
 function selectMotionTab(root,g){
   root.querySelectorAll("[data-mo-tab]").forEach(b=>b.setAttribute("aria-selected",b.dataset.moTab===g?"true":"false"));
