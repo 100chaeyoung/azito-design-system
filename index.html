@@ -1515,9 +1515,9 @@ body .usg-rank .usage-bar .ct{flex:none;text-align:left;font-variant-numeric:tab
 .mo-card-b .mo-go{font-size:13px;line-height:24px;color:var(--fg-3)}
 .mo-card-b .mo-go:hover{color:var(--fg)}
 .mo-card-b a:hover{color:var(--fg)}
-.mo-seg{position:absolute;top:10px;left:12px;z-index:6;display:inline-flex;gap:2px;padding:2px;border-radius:8px;background:rgba(28,30,34,.06);font-family:var(--font);opacity:0;pointer-events:none;transition:opacity .18s ease}
-.mo-card:hover .mo-seg,.mo-card:focus-within .mo-seg,.mo-card.is-code .mo-seg{opacity:1;pointer-events:auto}
-@media (hover:none){.mo-seg{opacity:1;pointer-events:auto}}
+.mo-seg{position:absolute;top:10px;left:12px;z-index:6;display:inline-flex;gap:2px;padding:2px;border-radius:8px;background:rgba(28,30,34,.06);font-family:var(--font);opacity:0;transform:translateY(-3px);pointer-events:none;transition:opacity .4s cubic-bezier(.2,.7,.2,1),transform .4s cubic-bezier(.2,.7,.2,1)}
+.mo-card:hover .mo-seg,.mo-card:focus-within .mo-seg,.mo-card.is-code .mo-seg{opacity:1;transform:none;pointer-events:auto;transition-delay:.06s}
+@media (hover:none){.mo-seg{opacity:1;transform:none;pointer-events:auto}}
 .mo-seg button{height:24px;padding:0 10px;border:0;border-radius:6px;background:none;color:var(--fg-3);font:inherit;font-size:12px;line-height:16px;font-weight:500;cursor:pointer;transition:background .15s,color .15s,box-shadow .15s}
 .mo-seg button:hover{color:var(--fg)}
 .mo-seg button[aria-pressed="true"]{background:var(--bg);color:var(--fg);box-shadow:0 0 1px rgba(40,41,61,.12),0 1px 2px rgba(96,97,112,.16)}
@@ -2559,7 +2559,7 @@ function render(id){
 }</pre></div></div></div><div class="card-b"><b>Motion Prototype</b><span>개발 전 모션 아이디어를 동작 가능한 예시로 공유하고 함께 검토해요.</span></div></a></div></section><section class="shortcuts"><h2>시스템 이해하기</h2><div class="grid ov-grid"><a class="card" href="#foundations"><div class="thumb raw ov-type"><b>Aa</b><small>Typography</small></div><div class="card-b"><b>Foundations</b><span>컬러·타이포그래피·간격 등 UI의 바탕이 되는 토큰과 원칙을 모았어요.</span></div></a><a class="card" href="#components"><div class="thumb raw ov-comp"><div class="ovc-grid"><div class="ovc-t w2"><div class="az-fit">${thumbOf("toggle")}</div></div><div class="ovc-t w2"><div class="az-fit">${thumbOf("icon-button")}</div></div><div class="ovc-t w2"><div class="az-fit">${thumbOf("checkbox")}</div></div><div class="ovc-t w3"><div class="az-fit">${thumbOf("control-chip")}</div></div><div class="ovc-t w3"><div class="az-fit">${thumbOf("action-button")}</div></div></div></div><div class="card-b"><b>Components</b><span>버튼·체크박스 등 화면을 이루는 기본 단위의 속성과 스펙을 정리했어요.</span></div></a></div></section></div>`;
   } else if(id==="motion"){
     const p=PAGES.motion;
-    html=`<p class="eyebrow"><b>Motion</b></p><h1>${p.title}</h1><p class="lead">${esc(p.lead)}</p>${p.html}<div class="color-tabs mo-tabs" role="tablist" aria-label="Motion categories"><button type="button" role="tab" aria-selected="true" data-mo-tab="all">All</button>${MOTION_GROUPS.map(([g,t])=>`<button type="button" role="tab" aria-selected="false" aria-controls="mo-panel-${g}" data-mo-tab="${g}">${t}</button>`).join("")}</div>${MOTION_GROUPS.map(([g,t,cid,cl])=>`<section class="mo-panel" id="mo-panel-${g}" role="tabpanel" data-mo-panel="${g}"><div class="mo-group-h"><h2 data-toc>${t}</h2>${cid?`<a href="#${cid}">${cl} 페이지 →</a>`:""}</div>${motionGrid(g,[cid,cl])}</section>`).join("")}`;
+    html=`<p class="eyebrow"><b>Motion</b></p><h1>${p.title}</h1><p class="lead">${esc(p.lead)}</p>${p.html}<div class="color-tabs mo-tabs" role="tablist" aria-label="Motion categories"><button type="button" role="tab" aria-selected="true" data-mo-tab="all">All</button>${MOTION_GROUPS.map(([g,t])=>`<button type="button" role="tab" aria-selected="false" aria-controls="mo-panel-${g}" data-mo-tab="${g}">${t}</button>`).join("")}</div>${MOTION_GROUPS.map(([g,t,cid,cl])=>`<section class="mo-panel" id="mo-panel-${g}" role="tabpanel" data-mo-panel="${g}"><div class="mo-group-h"><h2 data-toc>${t}</h2></div>${motionGrid(g,[cid,cl])}</section>`).join("")}`;
   } else if(id==="color"){
     const p=PAGES.color;
     html=`<p class="eyebrow"><b>${groupOf(id)}</b></p><h1>${p.title}</h1><p class="lead">${esc(p.lead)}</p>${colorPage()}`;
