@@ -1360,6 +1360,9 @@ body .usg-rank .usage-bar .ct{flex:none;text-align:left;font-variant-numeric:tab
 
 </style>
 <style id="motion-css">
+.mo-tabs{margin:8px 0 8px}
+.mo-tabs button small{margin-left:4px;font-size:13px;color:var(--fg-3);font-weight:500}
+
 .mo-recs{position:relative;overflow:hidden;isolation:isolate;display:inline-flex;align-items:center;justify-content:center;gap:4px;box-sizing:border-box;padding:7px 12px;border:0;border-radius:6px;background:#F3F5F7;color:#32363E;font-family:var(--font);font-size:14px;line-height:19px;font-weight:700;letter-spacing:-0.28px;cursor:pointer;-webkit-font-smoothing:antialiased;transition:transform .15s}
 .mo-recs:active{transform:scale(.96)}
 .mo-recs svg{display:block;flex:none}
@@ -2516,7 +2519,7 @@ function render(id){
 }</pre></div></div></div><div class="card-b"><b>Motion Prototype</b><span>개발 전 모션 아이디어를 동작 가능한 예시로 공유하고 함께 검토해요.</span></div></a></div></section><section class="shortcuts"><h2>시스템 이해하기</h2><div class="grid ov-grid"><a class="card" href="#foundations"><div class="thumb raw ov-type"><b>Aa</b><small>Typography</small></div><div class="card-b"><b>Foundations</b><span>컬러·타이포그래피·간격 등 UI의 바탕이 되는 토큰과 원칙을 모았어요.</span></div></a><a class="card" href="#components"><div class="thumb raw ov-comp"><div class="ovc-grid"><div class="ovc-t w2"><div class="az-fit">${thumbOf("toggle")}</div></div><div class="ovc-t w2"><div class="az-fit">${thumbOf("icon-button")}</div></div><div class="ovc-t w2"><div class="az-fit">${thumbOf("checkbox")}</div></div><div class="ovc-t w3"><div class="az-fit">${thumbOf("control-chip")}</div></div><div class="ovc-t w3"><div class="az-fit">${thumbOf("action-button")}</div></div></div></div><div class="card-b"><b>Components</b><span>버튼·체크박스 등 화면을 이루는 기본 단위의 속성과 스펙을 정리했어요.</span></div></a></div></section></div>`;
   } else if(id==="motion"){
     const p=PAGES.motion;
-    html=`<p class="eyebrow"><b>Motion</b></p><h1>${p.title}</h1><p class="lead">${esc(p.lead)}</p>${p.html}${MOTION_GROUPS.map(([g,t,cid,cl])=>`<div class="mo-group-h"><h2 data-toc>${t}</h2>${cid?`<a href="#${cid}">${cl} 페이지 →</a>`:""}</div>${motionGrid(g,[cid,cl])}`).join("")}`;
+    html=`<p class="eyebrow"><b>Motion</b></p><h1>${p.title}</h1><p class="lead">${esc(p.lead)}</p>${p.html}<div class="color-tabs mo-tabs" role="tablist" aria-label="Motion 분류">${MOTION_GROUPS.map(([g,t],i)=>`<button type="button" role="tab" aria-selected="${i===0}" aria-controls="mo-panel-${g}" data-mo-tab="${g}">${t}<small>${MOTION[g].length}</small></button>`).join("")}</div>${MOTION_GROUPS.map(([g,t,cid,cl],i)=>`<section class="mo-panel" id="mo-panel-${g}" role="tabpanel" data-mo-panel="${g}"${i?" hidden":""}><div class="mo-group-h"><h2 data-toc>${t}</h2>${cid?`<a href="#${cid}">${cl} 페이지 →</a>`:""}</div>${motionGrid(g,[cid,cl])}</section>`).join("")}`;
   } else if(id==="color"){
     const p=PAGES.color;
     html=`<p class="eyebrow"><b>${groupOf(id)}</b></p><h1>${p.title}</h1><p class="lead">${esc(p.lead)}</p>${colorPage()}`;
@@ -2549,6 +2552,7 @@ function render(id){
   initStageFades(doc);
   organizeReference(doc);
   initColorTabs(doc);
+  initMotionTabs(doc);
   buildToc(doc);
   fitThumbs();
   doc.querySelectorAll(".log-filter button").forEach(b=>b.addEventListener("click",()=>{doc.querySelectorAll(".log-filter button").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));doc.querySelectorAll("#logAll .log-item").forEach(it=>{it.hidden=!(b.dataset.f==="all"||it.dataset.type===b.dataset.f);});}));
@@ -2567,6 +2571,15 @@ function render(id){
   document.getElementById("menuBtn").setAttribute("aria-expanded","false");
 }
 let colorTip;
+function initMotionTabs(root){
+  const tabs=[...root.querySelectorAll("[data-mo-tab]")];
+  if(!tabs.length) return;
+  tabs.forEach(tab=>tab.addEventListener("click",()=>{selectMotionTab(root,tab.dataset.moTab);buildToc(root);}));
+}
+function selectMotionTab(root,g){
+  root.querySelectorAll("[data-mo-tab]").forEach(b=>b.setAttribute("aria-selected",b.dataset.moTab===g?"true":"false"));
+  root.querySelectorAll("[data-mo-panel]").forEach(p=>p.hidden=p.dataset.moPanel!==g);
+}
 function initColorTabs(root){
   const tabs=[...root.querySelectorAll("[data-color-tab]")];
   if(!tabs.length) return;
@@ -2839,7 +2852,7 @@ const SEC_LINK={motion:"motion",home:"overview",usage:"usage",updates:"updates",
   document.addEventListener("click",e=>{if(!e.target.closest("#gsearch"))close();});
   document.addEventListener("keydown",e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="k"){e.preventDefault();q.focus();q.select();return;}if(e.key==="/"&&document.activeElement!==q&&!/input|textarea/i.test(document.activeElement.tagName)){e.preventDefault();q.focus();}});
 })();
-const route=()=>{const [pid,anchor]=(location.hash||"#overview").slice(1).split("/");render(pid);if(anchor)setTimeout(()=>{const t=document.getElementById(decodeURIComponent(anchor));if(!t)return;t.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth",block:"center"});t.classList.remove("mo-hit");void t.offsetWidth;t.classList.add("mo-hit");},60);};
+const route=()=>{const [pid,anchor]=(location.hash||"#overview").slice(1).split("/");render(pid);if(anchor)setTimeout(()=>{const t=document.getElementById(decodeURIComponent(anchor));if(!t)return;const mp=t.closest("[data-mo-panel]");if(mp&&mp.hidden){const d=document.getElementById("doc")||mp.parentElement;selectMotionTab(mp.parentElement,mp.dataset.moPanel);buildToc(mp.parentElement);}t.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth",block:"center"});t.classList.remove("mo-hit");void t.offsetWidth;t.classList.add("mo-hit");},60);};
 document.addEventListener("click",e=>{const b=e.target.closest("[data-mo-link]");if(!b)return;const url=location.origin+location.pathname+"#motion/"+b.dataset.moLink;const lab=b.querySelector("span"),o=lab.textContent;const done=()=>{b.classList.add("copied");lab.textContent="링크 복사됨";setTimeout(()=>{lab.textContent=o;b.classList.remove("copied")},1400)};try{navigator.clipboard.writeText(url).then(done,done)}catch(err){done()}});
 window.addEventListener("hashchange",route);
 document.getElementById("menuBtn").addEventListener("click",e=>{const s=document.getElementById("side");const o=s.classList.toggle("open");e.currentTarget.setAttribute("aria-expanded",o?"true":"false");});
